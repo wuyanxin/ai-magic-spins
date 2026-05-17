@@ -22,7 +22,6 @@ const LLMService = {
         endpoint: '',
         apiKey: '',
         model: 'gpt-4o',
-        corsProxy: '',
         systemPrompt: DEFAULT_SYSTEM_PROMPT
     },
 
@@ -65,26 +64,20 @@ const LLMService = {
 
     async callAPI(messages) {
         try {
-            const endpoint = this.config.corsProxy
-                ? this.config.corsProxy.replace(/\/?$/, '') + '/' + this.config.endpoint.replace(/^https?:\/\//, '')
-                : this.config.endpoint;
-            const url = `${endpoint}/chat/completions`;
-            const response = await fetch(url, {
+            const response = await fetch('/api/llm/chat', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.config.apiKey}`
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    endpoint: this.config.endpoint,
+                    apiKey: this.config.apiKey,
                     model: this.config.model,
-                    messages: messages,
-                    response_format: { type: 'json_object' }
+                    messages: messages
                 })
             });
 
             if (!response.ok) {
-                const errorText = await response.text().catch(() => '');
-                return { error: `API错误: ${response.status} ${response.statusText}${errorText ? ' - ' + errorText : ''}` };
+                const errorData = await response.json().catch(() => ({}));
+                return { error: errorData.error || `请求失败: ${response.status}` };
             }
 
             const data = await response.json();
@@ -100,10 +93,7 @@ const LLMService = {
             }
         } catch (error) {
             console.error('LLMService callAPI error:', error);
-            if (error.message && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
-                return { error: '跨域请求被阻止（CORS错误），请在LLM配置中填写CORS代理地址，例如：https://corsproxy.io/?' };
-            }
-            return { error: '网络连接失败，请检查API配置' };
+            return { error: '无法连接到代理服务，请确认服务端已启动（npm start）' };
         }
     },
 
