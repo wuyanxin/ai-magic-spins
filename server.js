@@ -37,14 +37,18 @@ async function handleLLMProxy(req, res) {
     req.on('end', async () => {
         try {
             const { endpoint, apiKey, model, messages } = JSON.parse(body);
+            console.log(`[LLM代理] 收到请求 → ${model || 'gpt-4o'} @ ${endpoint}`);
+            console.log(`[LLM代理] 消息数: ${messages?.length || 0}`);
 
             if (!endpoint || !apiKey) {
+                console.log('[LLM代理] 错误: 缺少API地址或密钥');
                 res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
                 res.end(JSON.stringify({ error: '缺少API地址或密钥' }));
                 return;
             }
 
             const url = `${endpoint.replace(/\/$/, '')}/chat/completions`;
+            console.log(`[LLM代理] 转发请求到: ${url.replace(apiKey, '***')}`);
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -61,6 +65,7 @@ async function handleLLMProxy(req, res) {
 
             if (!response.ok) {
                 const errorText = await response.text().catch(() => '');
+                console.log(`[LLM代理] API响应错误: ${response.status}`);
                 res.writeHead(response.status, { 'Content-Type': 'application/json; charset=utf-8' });
                 res.end(JSON.stringify({
                     error: `API错误: ${response.status} ${response.statusText}${errorText ? ' - ' + errorText : ''}`
@@ -69,9 +74,11 @@ async function handleLLMProxy(req, res) {
             }
 
             const data = await response.json();
+            console.log(`[LLM代理] 请求成功, 响应已返回`);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify(data));
         } catch (error) {
+            console.log(`[LLM代理] 异常: ${error.message}`);
             res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ error: `代理请求失败: ${error.message}` }));
         }
@@ -92,6 +99,7 @@ const server = http.createServer((req, res) => {
     if (req.method === 'POST' && req.url === '/api/llm/chat') {
         handleLLMProxy(req, res);
     } else {
+        console.log(`[静态文件] ${req.url}`);
         serveStatic(req, res);
     }
 });

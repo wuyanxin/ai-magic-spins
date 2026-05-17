@@ -64,7 +64,10 @@ const LLMService = {
 
     async callAPI(messages) {
         try {
-            const response = await fetch('/api/llm/chat', {
+            const proxyUrl = window.location.origin === 'http://localhost:3000'
+                ? '/api/llm/chat'
+                : 'http://localhost:3000/api/llm/chat';
+            const response = await fetch(proxyUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

@@ -423,7 +423,7 @@ const App = {
     },
 
     async handleLLMTextParse() {
-        const text = document.getElementById('medicationDescription').value.trim();
+        const text = document.getElementById('llmDescription').value.trim();
         if (!text) {
             UI.showToast('请输入药品描述');
             return;
