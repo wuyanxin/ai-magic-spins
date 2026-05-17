@@ -80,20 +80,32 @@ class ReminderViewModel: ObservableObject {
     }
     
     func markAsTaken(recordId: UUID) {
-        if var record = todayDoseRecords.first(where: { $0.id == recordId }) {
-            record.status = .taken
-            record.actualTime = Date()
-            databaseService.updateDoseRecord(record)
-            loadTodayRecords(memberId: record.memberId)
+        var records = databaseService.fetchDoseRecords(for: Date())
+        if let index = records.firstIndex(where: { $0.id == recordId }) {
+            records[index].status = .taken
+            records[index].actualTime = Date()
+            databaseService.updateDoseRecord(records[index])
+            
+            if let memberId = records[index].memberId {
+                loadTodayRecords(memberId: memberId)
+            } else {
+                loadTodayRecords()
+            }
         }
     }
     
     func markAsSkipped(recordId: UUID, reason: String?) {
-        if var record = todayDoseRecords.first(where: { $0.id == recordId }) {
-            record.status = .skipped
-            record.skippedReason = reason
-            databaseService.updateDoseRecord(record)
-            loadTodayRecords(memberId: record.memberId)
+        var records = databaseService.fetchDoseRecords(for: Date())
+        if let index = records.firstIndex(where: { $0.id == recordId }) {
+            records[index].status = .skipped
+            records[index].skippedReason = reason
+            databaseService.updateDoseRecord(records[index])
+            
+            if let memberId = records[index].memberId {
+                loadTodayRecords(memberId: memberId)
+            } else {
+                loadTodayRecords()
+            }
         }
     }
     

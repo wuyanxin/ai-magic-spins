@@ -23,11 +23,21 @@ struct HomeView: View {
             }
             .background(AppColors.background)
             .navigationTitle("今日用药")
+            .onAppear {
+                loadDataForCurrentMember()
+            }
+            .onChange(of: familyMemberViewModel.selectedMember?.id) { _, _ in
+                loadDataForCurrentMember()
+            }
             .refreshable {
-                medicationViewModel.loadMedications(memberId: familyMemberViewModel.selectedMember?.id)
-                reminderViewModel.loadTodayRecords(memberId: familyMemberViewModel.selectedMember?.id)
+                loadDataForCurrentMember()
             }
         }
+    }
+    
+    private func loadDataForCurrentMember() {
+        medicationViewModel.loadMedications(memberId: familyMemberViewModel.selectedMember?.id)
+        reminderViewModel.loadTodayRecords(memberId: familyMemberViewModel.selectedMember?.id)
     }
     
     private var headerSection: some View {

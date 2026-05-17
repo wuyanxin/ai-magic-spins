@@ -4,6 +4,8 @@ struct FamilyStatsView: View {
     @EnvironmentObject var familyMemberViewModel: FamilyMemberViewModel
     @State private var selectedPeriod: HistoryPeriod = .week
     
+    private let databaseService = DatabaseService.shared
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -16,6 +18,9 @@ struct FamilyStatsView: View {
             }
             .background(AppColors.background)
             .navigationTitle("家庭统计")
+            .onAppear {
+                selectedPeriod = .week
+            }
         }
     }
     
@@ -238,30 +243,101 @@ struct FamilyStatsView: View {
     }
     
     private var totalMedicationsCount: Int {
-        return familyMemberViewModel.familyMembers.reduce(0) { sum, _ in
-            sum + Int.random(in: 1...5)
+        var total = 0
+        for member in familyMemberViewModel.familyMembers {
+            let medications = databaseService.fetchMedications(for: member.id)
+            total += medications.count
         }
+        return total
     }
     
     private var totalDosesCount: Int {
-        return familyMemberViewModel.familyMembers.reduce(0) { sum, _ in
-            sum + Int.random(in: 10...50)
+        var total = 0
+        let calendar = Calendar.current
+        let now = Date()
+        
+        switch selectedPeriod {
+        case .week:
+            let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now))!
+            for member in familyMemberViewModel.familyMembers {
+                let records = databaseService.fetchDoseRecords(from: startOfWeek, to: now, memberId: member.id)
+                total += records.count
+            }
+        case .month:
+            let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now))!
+            for member in familyMemberViewModel.familyMembers {
+                let records = databaseService.fetchDoseRecords(from: startOfMonth, to: now, memberId: member.id)
+                total += records.count
+            }
+        case .all:
+            for member in familyMemberViewModel.familyMembers {
+                let records = databaseService.fetchDoseRecords(for: member.id)
+                total += records.count
+            }
         }
+        
+        return total
     }
     
     private func getMemberComplianceRate(_ member: FamilyMember) -> Double {
-        return Double.random(in: 60...100)
+        let calendar = Calendar.current
+        let now = Date()
+        
+        var startDate: Date
+        switch selectedPeriod {
+        case .week:
+            startDate = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now))!
+        case .month:
+            startDate = calendar.date(from: calendar.dateComponents([.year, .month], from: now))!
+        case .all:
+            startDate = calendar.date(byAdding: .year, value: -1, to: now)!
+        }
+        
+        let records = databaseService.fetchDoseRecords(from: startDate, to: now, memberId: member.id)
+        guard !records.isEmpty else { return 0 }
+        
+        let completedCount = records.filter { $0.status == .taken || $0.status == .skipped }.count
+        return Double(completedCount) / Double(records.count) * 100
     }
     
     private func getMemberMedicationCount(_ member: FamilyMember) -> Int {
-        return Int.random(in: 1...5)
+        let medications = databaseService.fetchMedications(for: member.id)
+        return medications.filter { $0.isActive }.count
     }
     
     private func getMemberTakenCount(_ member: FamilyMember) -> Int {
-        return Int.random(in: 5...20)
+        let calendar = Calendar.current
+        let now = Date()
+        
+        var startDate: Date
+        switch selectedPeriod {
+        case .week:
+            startDate = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now))!
+        case .month:
+            startDate = calendar.date(from: calendar.dateComponents([.year, .month], from: now))!
+        case .all:
+            startDate = calendar.date(byAdding: .year, value: -1, to: now)!
+        }
+        
+        let records = databaseService.fetchDoseRecords(from: startDate, to: now, memberId: member.id)
+        return records.filter { $0.status == .taken }.count
     }
     
     private func getMemberSkippedCount(_ member: FamilyMember) -> Int {
-        return Int.random(in: 0...3)
+        let calendar = Calendar.current
+        let now = Date()
+        
+        var startDate: Date
+        switch selectedPeriod {
+        case .week:
+            startDate = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now))!
+        case .month:
+            startDate = calendar.date(from: calendar.dateComponents([.year, .month], from: now))!
+        case .all:
+            startDate = calendar.date(byAdding: .year, value: -1, to: now)!
+        }
+        
+        let records = databaseService.fetchDoseRecords(from: startDate, to: now, memberId: member.id)
+        return records.filter { $0.status == .skipped }.count
     }
 }
