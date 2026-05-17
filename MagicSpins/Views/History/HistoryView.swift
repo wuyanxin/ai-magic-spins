@@ -2,28 +2,36 @@ import SwiftUI
 
 struct HistoryView: View {
     @StateObject private var historyViewModel = HistoryViewModel()
+    @EnvironmentObject var familyMemberViewModel: FamilyMemberViewModel
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    // Period Selector
                     periodSelector
                     
-                    // Statistics Card
                     statisticsCard
                     
-                    // History List
                     historyList
                 }
                 .padding()
             }
             .background(AppColors.background)
             .navigationTitle("服药历史")
+            .onAppear {
+                loadDataForCurrentMember()
+            }
+            .onChange(of: familyMemberViewModel.selectedMember?.id) { _, _ in
+                loadDataForCurrentMember()
+            }
             .refreshable {
-                historyViewModel.loadHistory()
+                loadDataForCurrentMember()
             }
         }
+    }
+    
+    private func loadDataForCurrentMember() {
+        historyViewModel.loadHistory(memberId: familyMemberViewModel.selectedMember?.id)
     }
     
     private var periodSelector: some View {
@@ -34,7 +42,7 @@ struct HistoryView: View {
         }
         .pickerStyle(.segmented)
         .onChange(of: historyViewModel.selectedPeriod) { _, _ in
-            historyViewModel.loadHistory()
+            loadDataForCurrentMember()
         }
     }
     

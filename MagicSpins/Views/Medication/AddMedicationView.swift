@@ -3,6 +3,7 @@ import SwiftUI
 struct AddMedicationView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var medicationViewModel: MedicationViewModel
+    @EnvironmentObject var familyMemberViewModel: FamilyMemberViewModel
     
     @State private var name = ""
     @State private var dosage = ""
@@ -184,10 +185,11 @@ struct AddMedicationView: View {
             frequency: frequency,
             reminderTimes: reminderTimes.sorted(),
             category: category,
-            notes: notes.isEmpty ? nil : notes
+            notes: notes.isEmpty ? nil : notes,
+            memberId: familyMemberViewModel.selectedMember?.id
         )
         
-        medicationViewModel.addMedication(medication)
+        medicationViewModel.addMedication(medication, memberId: familyMemberViewModel.selectedMember?.id)
         dismiss()
     }
 }

@@ -16,9 +16,9 @@ class HistoryViewModel: ObservableObject {
         loadHistory()
     }
     
-    func loadHistory() {
+    func loadHistory(memberId: UUID? = nil) {
         let (startDate, endDate) = getDateRange()
-        doseRecords = databaseService.fetchDoseRecords(from: startDate, to: endDate)
+        doseRecords = databaseService.fetchDoseRecords(from: startDate, to: endDate, memberId: memberId)
         calculateStatistics()
     }
     

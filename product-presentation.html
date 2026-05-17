@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MagicSpins - 药吃了么 产品介绍</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #007AFF;
+            --primary-light: #5AC8FA;
+            --success: #34C759;
+            --warning: #FF9500;
+            --danger: #FF3B30;
+            --background: #F2F2F7;
+            --card-bg: #FFFFFF;
+            --text-primary: #1C1C1E;
+            --text-secondary: #8E8E93;
+            --gradient-start: #667eea;
+            --gradient-end: #764ba2;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(100px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .slide-content {
+            max-width: 1200px;
+            width: 100%;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .slide-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        .cover-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f64f59 100%);
+            color: white;
+        }
+
+        .cover-slide .slide-title {
+            background: white;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .cover-slide .slide-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 2rem;
+        }
+
+        .cover-slide .tagline {
+            font-size: 1.2rem;
+            margin-top: 40px;
+            padding: 15px 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+        }
+
+        .pill-icon {
+            font-size: 8rem;
+            margin-bottom: 40px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .tech-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card-bg);
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .tech-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .tech-badge.swift { background: #FA7343; }
+        .tech-badge.swiftui { background: #F05138; }
+        .tech-badge.sqlite { background: #003B57; }
+        .tech-badge.notifications { background: #FF9500; }
+        .tech-badge.mvvm { background: #34C759; }
+
+        .tech-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tech-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .tech-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .architecture-diagram {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            margin-top: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .arch-layer {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .arch-layer:last-child {
+            margin-bottom: 0;
+        }
+
+        .arch-label {
+            width: 120px;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .arch-components {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .arch-component {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .arch-component:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        .arch-arrow {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            position: relative;
+        }
+
+        .arch-arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 6px solid transparent;
+            border-left-color: var(--primary);
+        }
+
+        .user-flow {
+            background: var(--card-bg);
+            padding: 50px;
+            border-radius: 20px;
+            margin-top: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .flow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .flow-steps::before {
+            content: '';
+            position: absolute;
+            top: 50px;
+            left: 80px;
+            right: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--success), var(--warning), var(--danger));
+            border-radius: 2px;
+        }
+
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .flow-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        .flow-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .flow-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 120px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        .timeline {
+            margin-top: 40px;
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--primary), var(--success), var(--warning));
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            padding-left: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 5px;
+            width: 18px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 0 0 4px var(--primary);
+        }
+
+        .timeline-version {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .timeline-features {
+            list-style: none;
+            color: var(--text-secondary);
+        }
+
+        .timeline-features li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .timeline-features li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px;
+            border-radius: 20px;
+            color: white;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        .cta-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 18px 50px;
+            background: white;
+            color: var(--gradient-start);
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background: var(--gradient-start);
+            transform: scale(1.1);
+        }
+
+        .nav-btn:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-indicator {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            color: var(--text-primary);
+            z-index: 100;
+        }
+
+        .slide-indicator span {
+            color: var(--primary);
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .highlight-text {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .icon-list {
+            list-style: none;
+            margin-top: 30px;
+        }
+
+        .icon-list li {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            padding: 15px 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .icon-list li span {
+            font-size: 1.5rem;
+        }
+
+        .mockup-container {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+
+        .mockup-screen {
+            background: linear-gradient(180deg, #1C1C1E 0%, #2C2C2E 100%);
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+        }
+
+        .phone-notch {
+            width: 120px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 15px 15px;
+            margin: 0 auto 20px;
+        }
+
+        .phone-content {
+            padding: 15px;
+        }
+
+        .phone-header {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 15px;
+        }
+
+        .phone-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .phone-card-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .phone-card-desc {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .phone-tabs {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 15px;
+        }
+
+        .phone-tab {
+            font-size: 0.7rem;
+            opacity: 0.5;
+        }
+
+        .phone-tab.active {
+            opacity: 1;
+            color: var(--primary-light);
+        }
+
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .slide-title {
+                font-size: 2.5rem;
+            }
+
+            .cover-slide .slide-title {
+                font-size: 3rem;
+            }
+
+            .flow-steps {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .flow-steps::before {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-indicator">
+            <span id="currentSlide">1</span> / <span id="totalSlides">9</span>
+        </div>
+
+        <div class="slide active cover-slide" data-slide="1">
+            <div class="slide-content">
+                <div class="pill-icon">💊</div>
+                <h1 class="slide-title">MagicSpins</h1>
+                <p class="slide-subtitle">药吃了么 - 智能用药管理应用</p>
+                <div class="tagline">科学管理用药 · 守护家人健康</div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="2">
+            <div class="slide-content">
+                <h2 class="slide-title">项目概述</h2>
+                <p class="slide-subtitle">帮助用户科学管理用药，确保用药遵从性</p>
+
+                <div class="two-column">
+                    <div>
+                        <ul class="icon-list">
+                            <li><span>🎯</span> 核心价值：智能提醒 + 记录追踪</li>
+                            <li><span>👥</span> 目标用户：慢性病患者、家庭成员</li>
+                            <li><span>📱</span> 平台：iOS（iPhone）</li>
+                            <li><span>🛠️</span> 技术：SwiftUI + SQLite</li>
+                        </ul>
+                    </div>
+                    <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="stat-card">
+                            <div class="stat-number">1.0</div>
+                            <div class="stat-label">MVP版本</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">4</div>
+                            <div class="stat-label">核心模块</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">5+</div>
+                            <div class="stat-label">功能特性</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">2.5h</div>
+                            <div class="stat-label">开发周期</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="3">
+            <div class="slide-content">
+                <h2 class="slide-title">核心功能</h2>
+                <p class="slide-subtitle">五大功能模块，全方位满足用药管理需求</p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">💊</div>
+                        <h3 class="feature-title">药物管理</h3>
+                        <p class="feature-description">轻松添加、编辑和删除药物信息，支持多种服药频率和分类管理</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">⏰</div>
+                        <h3 class="feature-title">智能提醒</h3>
+                        <p class="feature-description">准时提醒您服药，支持每日重复提醒，不再错过任何一次用药</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3 class="feature-title">数据追踪</h3>
+                        <p class="feature-description">记录服药历史，追踪用药遵从率，生成详细的统计数据</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3 class="feature-title">统计报告</h3>
+                        <p class="feature-description">查看服药遵从率统计，支持本周/本月/全部时间范围</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h3 class="feature-title">简洁界面</h3>
+                        <p class="feature-description">直观易用的设计，大字号、高对比度，适合各年龄段用户</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="4">
+            <div class="slide-content">
+                <h2 class="slide-title">技术架构</h2>
+                <p class="slide-subtitle">现代化技术栈，打造高质量iOS应用</p>
+
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <div class="tech-badge swift">Swift</div>
+                        <div class="tech-info">
+                            <div class="tech-name">Swift 5.9+</div>
+                            <div class="tech-desc">Apple最新编程语言</div>
+                        </div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div class="tech-badge swiftui">SwiftUI</div>
+                        <div class="tech-info">
+                            <div class="tech-name">SwiftUI</div>
+                            <div class="tech-desc">声明式UI框架</div>
+                        </div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div class="tech-badge sqlite">SQLite</div>
+                        <div class="tech-info">
+                            <div class="tech-name">SQLite.swift</div>
+                            <div class="tech-desc">本地数据持久化</div>
+                        </div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div class="tech-badge notifications">🔔</div>
+                        <div class="tech-info">
+                            <div class="tech-name">UserNotifications</div>
+                            <div class="tech-desc">本地通知系统</div>
+                        </div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div class="tech-badge mvvm">MVVM</div>
+                        <div class="tech-info">
+                            <div class="tech-name">MVVM架构</div>
+                            <div class="tech-desc">视图-模型分离</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="architecture-diagram">
+                    <div class="arch-layer">
+                        <div class="arch-label">表现层</div>
+                        <div class="arch-components">
+                            <div class="arch-component">HomeView</div>
+                            <div class="arch-component">MedicationListView</div>
+                            <div class="arch-component">HistoryView</div>
+                            <div class="arch-component">SettingsView</div>
+                        </div>
+                    </div>
+
+                    <div class="arch-layer">
+                        <div class="arch-label">业务层</div>
+                        <div class="arch-components">
+                            <div class="arch-component">MedicationViewModel</div>
+                            <div class="arch-component">ReminderViewModel</div>
+                            <div class="arch-component">HistoryViewModel</div>
+                        </div>
+                    </div>
+
+                    <div class="arch-layer">
+                        <div class="arch-label">数据层</div>
+                        <div class="arch-components">
+                            <div class="arch-component">DatabaseService</div>
+                            <div class="arch-component">NotificationService</div>
+                            <div class="arch-component">AuthenticationService</div>
+                        </div>
+                    </div>
+
+                    <div class="arch-layer">
+                        <div class="arch-label">数据模型</div>
+                        <div class="arch-components">
+                            <div class="arch-component">Medication</div>
+                            <div class="arch-component">DoseRecord</div>
+                            <div class="arch-component">FamilyMember</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="5">
+            <div class="slide-content">
+                <h2 class="slide-title">用户界面</h2>
+                <p class="slide-subtitle">简洁直观的界面设计，3秒内即可理解</p>
+
+                <div class="two-column">
+                    <div>
+                        <h3 style="margin-bottom: 30px; color: var(--primary);">📱 四大核心页面</h3>
+                        <ul class="icon-list">
+                            <li><span>🏠</span> <strong>首页</strong> - 今日用药计划与遵从率展示</li>
+                            <li><span>💊</span> <strong>药物管理</strong> - 添加、编辑、删除药物</li>
+                            <li><span>📅</span> <strong>历史记录</strong> - 查看历史服药情况</li>
+                            <li><span>⚙️</span> <strong>设置</strong> - 应用配置与数据导出</li>
+                        </ul>
+
+                        <div style="margin-top: 30px; padding: 20px; background: rgba(0, 122, 255, 0.1); border-radius: 12px;">
+                            <h4 style="color: var(--primary); margin-bottom: 10px;">🎨 设计原则</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.8;">
+                                简洁直观 · 操作便捷 · 视觉清晰 · 反馈及时
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mockup-container">
+                        <div class="mockup-screen">
+                            <div class="phone-notch"></div>
+                            <div class="phone-content">
+                                <div class="phone-header">今日用药 · 遵从率 85%</div>
+                                <div class="phone-card">
+                                    <div class="phone-card-title">阿司匹林</div>
+                                    <div class="phone-card-desc">100mg · 早餐后服用 ✓</div>
+                                </div>
+                                <div class="phone-card">
+                                    <div class="phone-card-title">降压药</div>
+                                    <div class="phone-card-desc">50mg · 晚餐后服用 ⏰</div>
+                                </div>
+                                <div class="phone-card">
+                                    <div class="phone-card-title">维生素D</div>
+                                    <div class="phone-card-desc">400IU · 睡前服用 ○</div>
+                                </div>
+                                <div class="phone-tabs">
+                                    <div class="phone-tab active">首页</div>
+                                    <div class="phone-tab">药物</div>
+                                    <div class="phone-tab">历史</div>
+                                    <div class="phone-tab">设置</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="6">
+            <div class="slide-content">
+                <h2 class="slide-title">数据模型</h2>
+                <p class="slide-subtitle">清晰的数据结构设计</p>
+
+                <div class="two-column">
+                    <div>
+                        <div style="background: var(--card-bg); padding: 30px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                            <h4 style="color: var(--primary); margin-bottom: 15px;">💊 Medication 药物</h4>
+                            <ul style="color: var(--text-secondary); font-size: 0.95rem; line-height: 2;">
+                                <li>id: UUID 唯一标识</li>
+                                <li>name: 药物名称</li>
+                                <li>dosage: 剂量</li>
+                                <li>frequency: 服药频率</li>
+                                <li>reminderTimes: 提醒时间</li>
+                                <li>category: 分类（早餐/午餐/晚餐/睡前）</li>
+                            </ul>
+                        </div>
+
+                        <div style="background: var(--card-bg); padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                            <h4 style="color: var(--success); margin-bottom: 15px;">✓ DoseRecord 服药记录</h4>
+                            <ul style="color: var(--text-secondary); font-size: 0.95rem; line-height: 2;">
+                                <li>id: UUID 唯一标识</li>
+                                <li>medicationId: 关联药物ID</li>
+                                <li>scheduledTime: 计划时间</li>
+                                <li>actualTime: 实际服用时间</li>
+                                <li>status: 状态（已服用/跳过/未服用/待服用）</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 20px; color: white; margin-bottom: 20px;">
+                            <h3 style="margin-bottom: 20px;">📊 SQLite 数据库</h3>
+                            <ul style="font-size: 0.95rem; line-height: 2.2; opacity: 0.95;">
+                                <li>✓ medications 表</li>
+                                <li>✓ reminder_times 表</li>
+                                <li>✓ dose_records 表</li>
+                                <li>✓ 本地安全存储</li>
+                            </ul>
+                        </div>
+
+                        <div style="background: var(--card-bg); padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                            <h4 style="color: var(--warning); margin-bottom: 15px;">📈 遵从率计算</h4>
+                            <div style="background: var(--background); padding: 15px; border-radius: 10px; font-family: monospace;">
+                                遵从率 = (已服用 + 跳过) / 总提醒 × 100%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="7">
+            <div class="slide-content">
+                <h2 class="slide-title">使用流程</h2>
+                <p class="slide-subtitle">简单四步，开启智能用药管理</p>
+
+                <div class="user-flow">
+                    <div class="flow-steps">
+                        <div class="flow-step">
+                            <div class="flow-number">1</div>
+                            <div class="flow-title">添加药物</div>
+                            <div class="flow-desc">填写药物信息，设置提醒时间</div>
+                        </div>
+
+                        <div class="flow-step">
+                            <div class="flow-number">2</div>
+                            <div class="flow-title">接收提醒</div>
+                            <div class="flow-desc">准时收到服药提醒通知</div>
+                        </div>
+
+                        <div class="flow-step">
+                            <div class="flow-number">3</div>
+                            <div class="flow-title">标记状态</div>
+                            <div class="flow-desc">已服用/跳过/延后</div>
+                        </div>
+
+                        <div class="flow-step">
+                            <div class="flow-number">4</div>
+                            <div class="flow-title">查看统计</div>
+                            <div class="flow-desc">追踪遵从率，了解健康趋势</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px;">
+                    <div style="background: var(--card-bg); padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">📱</div>
+                        <h4 style="color: var(--primary);">本地通知</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">无需网络，离线可用</p>
+                    </div>
+
+                    <div style="background: var(--card-bg); padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">🔔</div>
+                        <h4 style="color: var(--warning);">延后提醒</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">30分钟后再次提醒</p>
+                    </div>
+
+                    <div style="background: var(--card-bg); padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">📋</div>
+                        <h4 style="color: var(--success);">数据导出</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">PDF格式分享记录</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="8">
+            <div class="slide-content">
+                <h2 class="slide-title">未来规划</h2>
+                <p class="slide-subtitle">持续迭代，打造更强大的健康管理应用</p>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-version">🚀 V2.0 智能升级</div>
+                        <ul class="timeline-features">
+                            <li>AI智能识别 - 拍照识别药品名称</li>
+                            <li>家庭成员管理 - 一人用药，全家共享</li>
+                            <li>云端数据同步 - 多设备无缝切换</li>
+                            <li>Apple Health集成 - 健康数据互联</li>
+                            <li>扫码识别 - 快速添加药物</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-version">🌟 V3.0 健康生态</div>
+                        <ul class="timeline-features">
+                            <li>药物相互作用检测 - 用药安全保障</li>
+                            <li>健康设备联动 - 智能健康监测</li>
+                            <li>医院系统对接 - 处方自动导入</li>
+                            <li>SOS紧急求助 - 一键联系家人</li>
+                            <li>药品库存管理 - 及时补充药物</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="stats-grid" style="margin-top: 50px;">
+                    <div class="stat-card">
+                        <div class="stat-number">AI</div>
+                        <div class="stat-label">智能识别</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">👨‍👩‍👧</div>
+                        <div class="stat-label">家庭共享</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">☁️</div>
+                        <div class="stat-label">云端同步</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">❤️</div>
+                        <div class="stat-label">健康生态</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="9">
+            <div class="slide-content">
+                <h2 class="slide-title">立即开始</h2>
+                <p class="slide-subtitle">让用药管理更智能、更简单</p>
+
+                <div class="cta-section">
+                    <h3 class="cta-title">💊 MagicSpins - 药吃了么</h3>
+                    <p class="cta-subtitle">科学管理用药，守护家人健康</p>
+                    <a href="#" class="cta-button">了解更多</a>
+                </div>
+
+                <div class="two-column" style="margin-top: 50px;">
+                    <div style="background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                        <div style="font-size: 3rem; margin-bottom: 15px;">📂</div>
+                        <h4 style="color: var(--primary);">项目源码</h4>
+                        <p style="color: var(--text-secondary);">完整SwiftUI源代码</p>
+                    </div>
+
+                    <div style="background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                        <div style="font-size: 3rem; margin-bottom: 15px;">📖</div>
+                        <h4 style="color: var(--success);">技术文档</h4>
+                        <p style="color: var(--text-secondary);">详细设计文档与API说明</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 50px; color: var(--text-secondary);">
+                    <p style="font-size: 1.1rem; margin-bottom: 10px;">MagicSpins 开发团队</p>
+                    <p style="font-size: 0.9rem;">© 2026 保留所有权利</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">←</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">→</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = document.querySelectorAll('.slide').length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+
+            if (n > totalSlides) currentSlide = totalSlides;
+            if (n < 1) currentSlide = 1;
+
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+                if (index + 1 === currentSlide) {
+                    slide.classList.add('active');
+                }
+            });
+
+            document.getElementById('currentSlide').textContent = currentSlide;
+
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+
+            document.querySelectorAll('.slide-content').forEach((content, index) => {
+                if (index + 1 === currentSlide) {
+                    content.style.animation = 'none';
+                    setTimeout(() => {
+                        content.style.animation = 'fadeInUp 0.8s ease-out';
+                    }, 10);
+                }
+            });
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            showSlide(currentSlide);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    changeSlide(1);
+                } else {
+                    changeSlide(-1);
+                }
+            }
+        }
+
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>

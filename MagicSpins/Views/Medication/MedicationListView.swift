@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MedicationListView: View {
     @EnvironmentObject var medicationViewModel: MedicationViewModel
+    @EnvironmentObject var familyMemberViewModel: FamilyMemberViewModel
     @State private var showingAddMedication = false
     @State private var searchText = ""
     
@@ -39,10 +40,20 @@ struct MedicationListView: View {
             .sheet(isPresented: $showingAddMedication) {
                 AddMedicationView()
             }
+            .onAppear {
+                loadDataForCurrentMember()
+            }
+            .onChange(of: familyMemberViewModel.selectedMember?.id) { _, _ in
+                loadDataForCurrentMember()
+            }
             .refreshable {
-                medicationViewModel.loadMedications()
+                loadDataForCurrentMember()
             }
         }
+    }
+    
+    private func loadDataForCurrentMember() {
+        medicationViewModel.loadMedications(memberId: familyMemberViewModel.selectedMember?.id)
     }
     
     private var groupedMedications: [MedicationCategory: [Medication]] {
