@@ -8,9 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		132D44D276440A1C88656003 /* MedicationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F212DE8FE86131A73A54EA /* MedicationCard.swift */; };
+		215FEB9ED8940D6DBBA258D9 /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE2FC2982152F232438B85 /* OCRService.swift */; };
 		21D41467334D9258DEA2D8D0 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F122854EF4864072F60AB40C /* Constants.swift */; };
 		2C868F79BE9EB019C6A5CD0D /* MagicSpinsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B524BDF1888979D5232859CB /* MagicSpinsApp.swift */; };
 		2E502F47F4F868EBAB42987F /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FACBA544309EFA4F06E92AD /* DatabaseService.swift */; };
+		523EF7996435B5D23D536490 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17F7C57F9C402ACD1121221 /* ImagePicker.swift */; };
 		56C93641E99B34F42B8304EC /* ReminderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2B23B716A1F11FE069B42B /* ReminderViewModel.swift */; };
 		6247928E63769BB4AC809B72 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7442BD4747F88670C84C93B7 /* NotificationService.swift */; };
 		6D3FD669F596094F5FAB0FB5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8950798905EF732480C169 /* SettingsView.swift */; };
@@ -21,9 +23,11 @@
 		885BB9AB3BCE142D51498844 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89D0C78E19E201AC28B195AC /* HistoryView.swift */; };
 		8D9D7E864F816C79F5B9D9F5 /* Medication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D788D013E42086BA2C67521E /* Medication.swift */; };
 		97A8A6FD5512AA36D3D450C0 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F472306FA11710EA85E01AD /* Extensions.swift */; };
+		BB509FB5139E8EFB9B716B4A /* ScanResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8A25DD8D8487394E405395 /* ScanResult.swift */; };
 		C7A25E002C9225DA77E543E0 /* DoseRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB5261FA7536E9BE3AAE2627 /* DoseRecord.swift */; };
 		CCA87C463845EB5F0B106365 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6620E8975DDB0BB812B90AF6 /* HistoryViewModel.swift */; };
 		CD4D525335A1F4D40377D97B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 708DD26ADE424128727DB838 /* README.md */; };
+		DDAF9A7CDAF0F4F5F6533F1D /* MedicationScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA96691BB7D183727DB7C6BA /* MedicationScannerView.swift */; };
 		F2C1944075733B3AD8432CCF /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD45BB13C6FC2A4B53F4055 /* Enums.swift */; };
 		F31E41A745AB39233FC03F1E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 987BE3F69800342BF5F87533 /* ContentView.swift */; };
 		FF0F9509D0593E54B66CE1C3 /* MedicationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0763ABE6C4201A2F0064E576 /* MedicationDetailView.swift */; };
@@ -31,6 +35,7 @@
 
 /* Begin PBXFileReference section */
 		0763ABE6C4201A2F0064E576 /* MedicationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationDetailView.swift; sourceTree = "<group>"; };
+		0B8A25DD8D8487394E405395 /* ScanResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanResult.swift; sourceTree = "<group>"; };
 		13F212DE8FE86131A73A54EA /* MedicationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationCard.swift; sourceTree = "<group>"; };
 		1F472306FA11710EA85E01AD /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		346E3A07F44EDB2DB0ED1756 /* MedicationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationViewModel.swift; sourceTree = "<group>"; };
@@ -39,6 +44,7 @@
 		708DD26ADE424128727DB838 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		7442BD4747F88670C84C93B7 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		89D0C78E19E201AC28B195AC /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		8DEE2FC2982152F232438B85 /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
 		987BE3F69800342BF5F87533 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9F2B23B716A1F11FE069B42B /* ReminderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderViewModel.swift; sourceTree = "<group>"; };
 		A778DDBA6B79ADCE8302B38A /* MedicationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationListView.swift; sourceTree = "<group>"; };
@@ -46,10 +52,12 @@
 		CB5261FA7536E9BE3AAE2627 /* DoseRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoseRecord.swift; sourceTree = "<group>"; };
 		D5B4D9DCBB349E0F2F48169E /* MagicSpins.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MagicSpins.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D788D013E42086BA2C67521E /* Medication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Medication.swift; sourceTree = "<group>"; };
+		DA96691BB7D183727DB7C6BA /* MedicationScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationScannerView.swift; sourceTree = "<group>"; };
 		DB8950798905EF732480C169 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E0459FDFB7E9D3B70E726E15 /* AddMedicationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMedicationView.swift; sourceTree = "<group>"; };
 		EDD45BB13C6FC2A4B53F4055 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		F122854EF4864072F60AB40C /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		F17F7C57F9C402ACD1121221 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		F4E74C2AB00A43808DF9BF9D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -92,8 +100,10 @@
 			isa = PBXGroup;
 			children = (
 				E0459FDFB7E9D3B70E726E15 /* AddMedicationView.swift */,
+				F17F7C57F9C402ACD1121221 /* ImagePicker.swift */,
 				0763ABE6C4201A2F0064E576 /* MedicationDetailView.swift */,
 				A778DDBA6B79ADCE8302B38A /* MedicationListView.swift */,
+				DA96691BB7D183727DB7C6BA /* MedicationScannerView.swift */,
 			);
 			path = Medication;
 			sourceTree = "<group>";
@@ -126,6 +136,7 @@
 			children = (
 				5FACBA544309EFA4F06E92AD /* DatabaseService.swift */,
 				7442BD4747F88670C84C93B7 /* NotificationService.swift */,
+				8DEE2FC2982152F232438B85 /* OCRService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -144,6 +155,7 @@
 				CB5261FA7536E9BE3AAE2627 /* DoseRecord.swift */,
 				EDD45BB13C6FC2A4B53F4055 /* Enums.swift */,
 				D788D013E42086BA2C67521E /* Medication.swift */,
+				0B8A25DD8D8487394E405395 /* ScanResult.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -266,14 +278,18 @@
 				885BB9AB3BCE142D51498844 /* HistoryView.swift in Sources */,
 				CCA87C463845EB5F0B106365 /* HistoryViewModel.swift in Sources */,
 				737B4AC59DC93F408A664795 /* HomeView.swift in Sources */,
+				523EF7996435B5D23D536490 /* ImagePicker.swift in Sources */,
 				2C868F79BE9EB019C6A5CD0D /* MagicSpinsApp.swift in Sources */,
 				8D9D7E864F816C79F5B9D9F5 /* Medication.swift in Sources */,
 				132D44D276440A1C88656003 /* MedicationCard.swift in Sources */,
 				FF0F9509D0593E54B66CE1C3 /* MedicationDetailView.swift in Sources */,
 				7BA026E36218E6701CC2A398 /* MedicationListView.swift in Sources */,
+				DDAF9A7CDAF0F4F5F6533F1D /* MedicationScannerView.swift in Sources */,
 				76578937D0DC7FD7BC6FE1B5 /* MedicationViewModel.swift in Sources */,
 				6247928E63769BB4AC809B72 /* NotificationService.swift in Sources */,
+				215FEB9ED8940D6DBBA258D9 /* OCRService.swift in Sources */,
 				56C93641E99B34F42B8304EC /* ReminderViewModel.swift in Sources */,
+				BB509FB5139E8EFB9B716B4A /* ScanResult.swift in Sources */,
 				6D3FD669F596094F5FAB0FB5 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -316,7 +332,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -329,13 +345,15 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "需要相机访问权限来拍摄药品包装盒进行智能识别";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "需要相册访问权限来选择药品照片进行智能识别";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.0.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -423,7 +441,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -442,13 +460,15 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "需要相机访问权限来拍摄药品包装盒进行智能识别";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "需要相册访问权限来选择药品照片进行智能识别";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.0.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

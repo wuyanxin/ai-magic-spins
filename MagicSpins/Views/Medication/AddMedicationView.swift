@@ -13,12 +13,29 @@ struct AddMedicationView: View {
     
     @State private var showingAlert = false
     @State private var alertMessage = ""
+    @State private var showScanner = false
     
     private let notificationService = NotificationService.shared
     
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    Button {
+                        showScanner = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "camera.viewfinder")
+                                .foregroundColor(AppColors.primary)
+                            Text("智能识别药品")
+                                .foregroundColor(AppColors.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(AppColors.secondaryText)
+                        }
+                    }
+                }
+                
                 Section(header: Text("基本信息")) {
                     TextField("药物名称", text: $name)
                         .autocapitalization(.words)
@@ -92,6 +109,34 @@ struct AddMedicationView: View {
                 Button("确定", role: .cancel) { }
             } message: {
                 Text(alertMessage)
+            }
+            .sheet(isPresented: $showScanner) {
+                MedicationScannerView { result in
+                    handleScanResult(result)
+                }
+            }
+        }
+    }
+    
+    private func handleScanResult(_ result: ScanResult) {
+        if let medName = result.detectedMedicationName {
+            name = medName
+        }
+        if let medDosage = result.detectedDosage {
+            dosage = medDosage
+        }
+        
+        if let freqText = result.detectedFrequency {
+            if freqText.contains("两次") || freqText.contains("2次") {
+                frequency = .twiceDaily
+            } else if freqText.contains("三次") || freqText.contains("3次") {
+                frequency = .threeTimesDaily
+            } else if freqText.contains("四次") || freqText.contains("4次") {
+                frequency = .fourTimesDaily
+            } else if freqText.contains("必要") {
+                frequency = .asNeeded
+            } else {
+                frequency = .daily
             }
         }
     }
