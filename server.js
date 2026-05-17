@@ -17,8 +17,8 @@ const MIME_TYPES = {
     '.ico': 'image/x-icon'
 };
 
-const llmEndpoint = process.env.LLM_ENDPOINT;
-const llmApiKey = process.env.LLM_API_KEY;
+const llmEndpoint = process.env.OPENAI_BASE_URL;
+const llmApiKey = process.env.OPENAI_API_KEY;
 const llmModel = process.env.LLM_MODEL || 'gpt-4o';
 
 function serveStatic(req, res) {
@@ -49,7 +49,7 @@ function handleGetConfig(req, res) {
 async function handleLLMProxy(req, res) {
     if (!llmEndpoint || !llmApiKey || llmApiKey === 'your-api-key-here') {
         res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
-        res.end(JSON.stringify({ error: '请先配置 .env 文件中的 LLM_API_KEY' }));
+        res.end(JSON.stringify({ error: '请先配置 .env 文件中的 OPENAI_API_KEY' }));
         return;
     }
 
@@ -101,7 +101,7 @@ async function handleLLMProxy(req, res) {
 async function handleTestConnection(req, res) {
     if (!llmEndpoint || !llmApiKey || llmApiKey === 'your-api-key-here') {
         res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
-        res.end(JSON.stringify({ error: '请先配置 .env 文件中的 LLM_API_KEY' }));
+        res.end(JSON.stringify({ error: '请先配置 .env 文件中的 OPENAI_API_KEY' }));
         return;
     }
 

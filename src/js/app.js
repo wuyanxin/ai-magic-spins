@@ -416,7 +416,7 @@ const App = {
         }
 
         if (!LLMService.isConfigured()) {
-            UI.showToast('请先在 .env 文件中配置 LLM_API_KEY');
+            UI.showToast('请先在 .env 文件中配置 OPENAI_API_KEY');
             return;
         }
 
