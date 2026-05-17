@@ -2015,7 +2015,7 @@
                 }
 
                 this.elements.todayReminders.innerHTML = reminders.map(reminder => `
-                    <div class="card reminder-card ${reminder.status === 'completed' ? 'completed' : ''} ${reminder.status === 'skipped' ? 'skipped' : ''}">
+                    <div class="card reminder-card ${reminder.status === 'taken' ? 'completed' : ''} ${reminder.status === 'skipped' ? 'skipped' : ''}">
                         <div class="card-header">
                             <div>
                                 <div class="reminder-time">${reminder.scheduledTime}</div>
@@ -2024,7 +2024,7 @@
                             </div>
                             <span class="reminder-status status-${reminder.status}">
                                 ${reminder.status === 'pending' ? '⏳ 待服用' : ''}
-                                ${reminder.status === 'completed' ? '✅ 已服用' : ''}
+                                ${reminder.status === 'taken' ? '✅ 已服用' : ''}
                                 ${reminder.status === 'skipped' ? '⏭️ 已跳过' : ''}
                             </span>
                         </div>
@@ -2411,7 +2411,7 @@
                 // Form submission
                 UI.elements.medicationForm.addEventListener('submit', (e) => {
                     e.preventDefault();
-                    this.saveMedication();
+                    App.saveMedication();
                 });
 
                 // Settings
@@ -2580,7 +2580,7 @@
 
                 if (log) {
                     AppState.updateLog(log.id, {
-                        status: 'completed',
+                        status: 'taken',
                         actualTime
                     });
                 } else {
@@ -2589,7 +2589,7 @@
                         medicationName,
                         scheduledTime,
                         actualTime,
-                        status: 'completed',
+                        status: 'taken',
                         dosage
                     });
                     AppState.addLog(log);
