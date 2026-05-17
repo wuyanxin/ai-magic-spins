@@ -130,8 +130,3 @@ struct HomeView: View {
     }
 }
 
-#Preview {
-    HomeView()
-        .environmentObject(MedicationViewModel())
-        .environmentObject(ReminderViewModel())
-}

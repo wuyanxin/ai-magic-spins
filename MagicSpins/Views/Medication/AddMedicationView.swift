@@ -192,7 +192,3 @@ struct AddMedicationView: View {
     }
 }
 
-#Preview {
-    AddMedicationView()
-        .environmentObject(MedicationViewModel())
-}

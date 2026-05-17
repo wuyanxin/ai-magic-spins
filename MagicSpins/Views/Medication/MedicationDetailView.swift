@@ -182,16 +182,3 @@ struct EditMedicationView: View {
     }
 }
 
-#Preview {
-    NavigationStack {
-        MedicationDetailView(medication: Medication(
-            name: "阿司匹林",
-            dosage: "100mg",
-            frequency: .daily,
-            reminderTimes: [Date()],
-            category: .morning,
-            notes: "饭后服用"
-        ))
-        .environmentObject(MedicationViewModel())
-    }
-}

@@ -241,7 +241,3 @@ struct HistoryRecordRow: View {
     }
 }
 
-#Preview {
-    HistoryView()
-        .environmentObject(MedicationViewModel())
-}

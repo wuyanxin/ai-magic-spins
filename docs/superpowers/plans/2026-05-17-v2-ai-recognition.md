@@ -16,10 +16,10 @@
 - ✅ 手动编辑识别结果并填充表单
 
 ### 第二阶段：智能解析（进阶）
-- 🔲 智能解析药品名称
-- 🔲 智能解析剂量信息
-- 🔲 智能解析频率信息
-- 🔲 药品数据库匹配
+- ✅ 智能解析药品名称
+- ✅ 智能解析剂量信息
+- ✅ 智能解析频率信息
+- ✅ 药品数据库匹配
 
 ---
 
@@ -32,7 +32,8 @@ MagicSpins/
 │       ├── AddMedicationView.swift (更新)
 │       └── MedicationScannerView.swift (新增)
 ├── Services/
-│   └── OCRService.swift (新增)
+│   ├── OCRService.swift (更新)
+│   └── MedicationDatabase.swift (新增)
 └── Models/
     └── ScanResult.swift (新增)
 ```

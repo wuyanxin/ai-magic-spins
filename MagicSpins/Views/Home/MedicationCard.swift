@@ -148,14 +148,3 @@ struct MedicationCard: View {
     }
 }
 
-#Preview {
-    MedicationCard(medication: Medication(
-        name: "阿司匹林",
-        dosage: "100mg",
-        frequency: .daily,
-        reminderTimes: [Date()],
-        category: .morning
-    ))
-    .environmentObject(ReminderViewModel())
-    .padding()
-}

@@ -151,6 +151,3 @@ struct FeatureRow: View {
     }
 }
 
-#Preview {
-    SettingsView()
-}

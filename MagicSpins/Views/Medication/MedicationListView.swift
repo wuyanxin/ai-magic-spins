@@ -117,7 +117,3 @@ struct MedicationRowView: View {
     }
 }
 
-#Preview {
-    MedicationListView()
-        .environmentObject(MedicationViewModel())
-}

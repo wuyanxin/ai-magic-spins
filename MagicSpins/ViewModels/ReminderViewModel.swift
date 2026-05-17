@@ -15,6 +15,37 @@ class ReminderViewModel: ObservableObject {
     
     func loadTodayRecords() {
         todayDoseRecords = databaseService.fetchDoseRecords(for: Date())
+        
+        let today = Date()
+        let medications = databaseService.fetchAllMedications().filter { $0.isActive }
+        let calendar = Calendar.current
+        
+        for medication in medications {
+            for reminderTime in medication.reminderTimes {
+                var components = calendar.dateComponents([.hour, .minute], from: reminderTime)
+                components.year = calendar.component(.year, from: today)
+                components.month = calendar.component(.month, from: today)
+                components.day = calendar.component(.day, from: today)
+                
+                if let scheduledTime = calendar.date(from: components) {
+                    let existingRecord = todayDoseRecords.first { record in
+                        record.medicationId == medication.id &&
+                        Calendar.current.isDate(record.scheduledTime, equalTo: scheduledTime, toGranularity: .minute)
+                    }
+                    
+                    if existingRecord == nil {
+                        let record = DoseRecord(
+                            medicationId: medication.id,
+                            scheduledTime: scheduledTime,
+                            status: .pending
+                        )
+                        databaseService.addDoseRecord(record)
+                    }
+                }
+            }
+        }
+        
+        todayDoseRecords = databaseService.fetchDoseRecords(for: Date())
         categorizeDoses()
     }
     

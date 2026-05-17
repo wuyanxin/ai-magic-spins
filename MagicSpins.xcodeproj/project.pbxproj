@@ -23,6 +23,7 @@
 		885BB9AB3BCE142D51498844 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89D0C78E19E201AC28B195AC /* HistoryView.swift */; };
 		8D9D7E864F816C79F5B9D9F5 /* Medication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D788D013E42086BA2C67521E /* Medication.swift */; };
 		97A8A6FD5512AA36D3D450C0 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F472306FA11710EA85E01AD /* Extensions.swift */; };
+		AA0DAECC756731480C2BF212 /* MedicationDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13DB5CF2E94EB8D32F0D5804 /* MedicationDatabase.swift */; };
 		BB509FB5139E8EFB9B716B4A /* ScanResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8A25DD8D8487394E405395 /* ScanResult.swift */; };
 		C7A25E002C9225DA77E543E0 /* DoseRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB5261FA7536E9BE3AAE2627 /* DoseRecord.swift */; };
 		CCA87C463845EB5F0B106365 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6620E8975DDB0BB812B90AF6 /* HistoryViewModel.swift */; };
@@ -36,6 +37,7 @@
 /* Begin PBXFileReference section */
 		0763ABE6C4201A2F0064E576 /* MedicationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationDetailView.swift; sourceTree = "<group>"; };
 		0B8A25DD8D8487394E405395 /* ScanResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanResult.swift; sourceTree = "<group>"; };
+		13DB5CF2E94EB8D32F0D5804 /* MedicationDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationDatabase.swift; sourceTree = "<group>"; };
 		13F212DE8FE86131A73A54EA /* MedicationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationCard.swift; sourceTree = "<group>"; };
 		1F472306FA11710EA85E01AD /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		346E3A07F44EDB2DB0ED1756 /* MedicationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationViewModel.swift; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				5FACBA544309EFA4F06E92AD /* DatabaseService.swift */,
+				13DB5CF2E94EB8D32F0D5804 /* MedicationDatabase.swift */,
 				7442BD4747F88670C84C93B7 /* NotificationService.swift */,
 				8DEE2FC2982152F232438B85 /* OCRService.swift */,
 			);
@@ -282,6 +285,7 @@
 				2C868F79BE9EB019C6A5CD0D /* MagicSpinsApp.swift in Sources */,
 				8D9D7E864F816C79F5B9D9F5 /* Medication.swift in Sources */,
 				132D44D276440A1C88656003 /* MedicationCard.swift in Sources */,
+				AA0DAECC756731480C2BF212 /* MedicationDatabase.swift in Sources */,
 				FF0F9509D0593E54B66CE1C3 /* MedicationDetailView.swift in Sources */,
 				7BA026E36218E6701CC2A398 /* MedicationListView.swift in Sources */,
 				DDAF9A7CDAF0F4F5F6533F1D /* MedicationScannerView.swift in Sources */,

@@ -238,10 +238,3 @@ struct MedicationScannerView: View {
     }
 }
 
-#Preview {
-    NavigationStack {
-        MedicationScannerView { result in
-            print("Scan complete: \(result)")
-        }
-    }
-}

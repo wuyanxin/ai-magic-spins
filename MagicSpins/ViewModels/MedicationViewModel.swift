@@ -46,6 +46,26 @@ class MedicationViewModel: ObservableObject {
     
     func addMedication(_ medication: Medication) {
         databaseService.addMedication(medication)
+        
+        let today = Date()
+        let calendar = Calendar.current
+        
+        for reminderTime in medication.reminderTimes {
+            var components = calendar.dateComponents([.hour, .minute], from: reminderTime)
+            components.year = calendar.component(.year, from: today)
+            components.month = calendar.component(.month, from: today)
+            components.day = calendar.component(.day, from: today)
+            
+            if let scheduledTime = calendar.date(from: components) {
+                let record = DoseRecord(
+                    medicationId: medication.id,
+                    scheduledTime: scheduledTime,
+                    status: .pending
+                )
+                databaseService.addDoseRecord(record)
+            }
+        }
+        
         notificationService.scheduleAllNotifications(for: medication)
         loadMedications()
     }

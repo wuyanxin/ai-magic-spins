@@ -33,8 +33,3 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView()
-        .environmentObject(MedicationViewModel())
-        .environmentObject(ReminderViewModel())
-}
