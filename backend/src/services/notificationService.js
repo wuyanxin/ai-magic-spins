@@ -114,7 +114,7 @@ class NotificationService {
 
     const notification = {
       title: '服药提醒 💊',
-      body: `该服用 ${medication.name} 了${familyMemberName ? `（' + ${familyMemberName}）' : ''}。\n剂量：${medication.dosage || '请遵医嘱'}`,
+      body: `该服用 ${medication.name} 了${familyMemberName ? `（${familyMemberName}）` : ''}。\n剂量：${medication.dosage || '请遵医嘱'}`,
       data: {
         type: 'medication_reminder',
         medicationId: medication._id,
