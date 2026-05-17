@@ -37,10 +37,6 @@ targets:
         ENABLE_PREVIEWS: YES
         GENERATE_INFOPLIST_FILE: YES
         SWIFT_EMIT_LOC_STRINGS: YES
-    dependencies:
-      - package: SQLite.swift
+    dependencies: []
 
-packages:
-  SQLite.swift:
-    url: https://github.com/stephencelis/SQLite.swift
-    from: "0.15.3"
+# SQLite.swift will be added manually in Xcode

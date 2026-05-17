@@ -14,12 +14,8 @@ class ReminderViewModel: ObservableObject {
     }
     
     func loadTodayRecords() {
-        do {
-            todayDoseRecords = try databaseService.fetchDoseRecords(for: Date())
-            categorizeDoses()
-        } catch {
-            print("Failed to load today's records: \(error)")
-        }
+        todayDoseRecords = databaseService.fetchDoseRecords(for: Date())
+        categorizeDoses()
     }
     
     func categorizeDoses() {
@@ -43,12 +39,7 @@ class ReminderViewModel: ObservableObject {
                     scheduledTime: scheduledTime,
                     status: .pending
                 )
-                
-                do {
-                    try databaseService.addDoseRecord(record)
-                } catch {
-                    print("Failed to create dose record: \(error)")
-                }
+                databaseService.addDoseRecord(record)
             }
         }
         
@@ -59,13 +50,8 @@ class ReminderViewModel: ObservableObject {
         if var record = todayDoseRecords.first(where: { $0.id == recordId }) {
             record.status = .taken
             record.actualTime = Date()
-            
-            do {
-                try databaseService.updateDoseRecord(record)
-                loadTodayRecords()
-            } catch {
-                print("Failed to update record: \(error)")
-            }
+            databaseService.updateDoseRecord(record)
+            loadTodayRecords()
         }
     }
     
@@ -73,13 +59,8 @@ class ReminderViewModel: ObservableObject {
         if var record = todayDoseRecords.first(where: { $0.id == recordId }) {
             record.status = .skipped
             record.skippedReason = reason
-            
-            do {
-                try databaseService.updateDoseRecord(record)
-                loadTodayRecords()
-            } catch {
-                print("Failed to update record: \(error)")
-            }
+            databaseService.updateDoseRecord(record)
+            loadTodayRecords()
         }
     }
     

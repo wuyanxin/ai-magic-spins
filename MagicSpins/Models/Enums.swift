@@ -1,6 +1,6 @@
 import Foundation
 
-enum Frequency: String, CaseIterable, Identifiable {
+enum Frequency: String, CaseIterable, Identifiable, Codable {
     case daily = "每日一次"
     case twiceDaily = "每日两次"
     case threeTimesDaily = "每日三次"
@@ -10,7 +10,7 @@ enum Frequency: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-enum MedicationCategory: String, CaseIterable, Identifiable {
+enum MedicationCategory: String, CaseIterable, Identifiable, Codable {
     case morning = "早餐"
     case lunch = "午餐"
     case dinner = "晚餐"
@@ -20,7 +20,7 @@ enum MedicationCategory: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-enum DoseStatus: String, CaseIterable, Identifiable {
+enum DoseStatus: String, CaseIterable, Identifiable, Codable {
     case taken = "已服用"
     case skipped = "跳过"
     case missed = "未服用"

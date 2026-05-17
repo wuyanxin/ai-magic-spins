@@ -18,14 +18,9 @@ class MedicationViewModel: ObservableObject {
     
     func loadMedications() {
         isLoading = true
-        do {
-            medications = try databaseService.fetchAllMedications().filter { $0.isActive }
-            filterTodayMedications()
-            isLoading = false
-        } catch {
-            errorMessage = "加载药物失败: \(error.localizedDescription)"
-            isLoading = false
-        }
+        medications = databaseService.fetchAllMedications().filter { $0.isActive }
+        filterTodayMedications()
+        isLoading = false
     }
     
     func filterTodayMedications() {
@@ -50,33 +45,21 @@ class MedicationViewModel: ObservableObject {
     }
     
     func addMedication(_ medication: Medication) {
-        do {
-            try databaseService.addMedication(medication)
-            notificationService.scheduleAllNotifications(for: medication)
-            loadMedications()
-        } catch {
-            errorMessage = "添加药物失败: \(error.localizedDescription)"
-        }
+        databaseService.addMedication(medication)
+        notificationService.scheduleAllNotifications(for: medication)
+        loadMedications()
     }
     
     func updateMedication(_ medication: Medication) {
-        do {
-            try databaseService.updateMedication(medication)
-            notificationService.scheduleAllNotifications(for: medication)
-            loadMedications()
-        } catch {
-            errorMessage = "更新药物失败: \(error.localizedDescription)"
-        }
+        databaseService.updateMedication(medication)
+        notificationService.scheduleAllNotifications(for: medication)
+        loadMedications()
     }
     
     func deleteMedication(_ medication: Medication) {
-        do {
-            notificationService.cancelNotifications(for: medication)
-            try databaseService.deleteMedication(id: medication.id)
-            loadMedications()
-        } catch {
-            errorMessage = "删除药物失败: \(error.localizedDescription)"
-        }
+        notificationService.cancelNotifications(for: medication)
+        databaseService.deleteMedication(id: medication.id)
+        loadMedications()
     }
     
     func toggleMedicationActive(_ medication: Medication) {

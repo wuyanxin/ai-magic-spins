@@ -5,36 +5,33 @@ struct ContentView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            HomeView()
+            Text("首页")
                 .tabItem {
                     Label("首页", systemImage: "house.fill")
                 }
                 .tag(0)
             
-            MedicationListView()
+            Text("药物")
                 .tabItem {
                     Label("药物", systemImage: "pills.fill")
                 }
                 .tag(1)
             
-            HistoryView()
+            Text("历史")
                 .tabItem {
                     Label("历史", systemImage: "clock.fill")
                 }
                 .tag(2)
             
-            SettingsView()
+            Text("设置")
                 .tabItem {
                     Label("设置", systemImage: "gearshape.fill")
                 }
                 .tag(3)
         }
-        .tint(AppColors.primary)
     }
 }
 
 #Preview {
     ContentView()
-        .environmentObject(MedicationViewModel())
-        .environmentObject(ReminderViewModel())
 }

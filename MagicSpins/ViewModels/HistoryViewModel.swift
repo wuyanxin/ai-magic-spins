@@ -18,13 +18,8 @@ class HistoryViewModel: ObservableObject {
     
     func loadHistory() {
         let (startDate, endDate) = getDateRange()
-        
-        do {
-            doseRecords = try databaseService.fetchDoseRecords(from: startDate, to: endDate)
-            calculateStatistics()
-        } catch {
-            print("Failed to load history: \(error)")
-        }
+        doseRecords = databaseService.fetchDoseRecords(from: startDate, to: endDate)
+        calculateStatistics()
     }
     
     func calculateStatistics() {
