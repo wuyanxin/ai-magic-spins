@@ -1938,13 +1938,13 @@
                 const weekLogs = this.logs.filter(l => l.createdAt.split('T')[0] >= weekAgo);
                 const monthLogs = this.logs.filter(l => l.createdAt.split('T')[0] >= monthAgo);
 
-                const weekCompleted = weekLogs.filter(l => l.status === 'completed').length;
+                const weekCompleted = weekLogs.filter(l => l.status === 'taken').length;
                 const weekTotal = weekLogs.length;
                 const weekCompliance = weekTotal > 0 ? Math.round((weekCompleted / weekTotal) * 100) : 0;
 
                 return {
                     totalMedications: this.medications.length,
-                    todayCompleted: todayLogs.filter(l => l.status === 'completed').length,
+                    todayCompleted: todayLogs.filter(l => l.status === 'taken').length,
                     todayPending: todayLogs.filter(l => l.status === 'pending').length,
                     weekCompliance,
                     monthLogs: monthLogs.length,
@@ -1970,6 +1970,7 @@
                     historyList: document.getElementById('historyList'),
                     medicationModal: document.getElementById('medicationModal'),
                     medicationForm: document.getElementById('medicationForm'),
+                    medicationId: document.getElementById('medicationId'),
                     modalTitle: document.getElementById('modalTitle'),
                     toast: document.getElementById('toast'),
                     notificationToggle: document.getElementById('notificationToggle'),
@@ -2120,14 +2121,14 @@
                         ${day.logs.map(log => `
                             <div class="log-item">
                                 <div class="log-icon ${log.status}">
-                                    ${log.status === 'completed' ? '✅' : ''}
+                                    ${log.status === 'taken' ? '✅' : ''}
                                     ${log.status === 'skipped' ? '⏭️' : ''}
                                     ${log.status === 'pending' ? '⏳' : ''}
                                 </div>
                                 <div class="log-details">
                                     <div class="log-medication">${log.medicationName}</div>
                                     <div class="log-time">计划 ${log.scheduledTime} · 
-                                        ${log.status === 'completed' ? `实际 ${log.actualTime || '未知'}` : ''}
+                                        ${log.status === 'taken' ? `实际 ${log.actualTime || '未知'}` : ''}
                                         ${log.status === 'skipped' ? '已跳过' : ''}
                                         ${log.status === 'pending' ? '未服用' : ''}
                                     </div>
