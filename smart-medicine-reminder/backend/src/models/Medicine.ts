@@ -1,35 +1,85 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../database';
+import FamilyMember from './FamilyMember';
 
-export interface IMedicineSchedule {
-  time: string;
-  dosage: string;
-}
-
-export interface IMedicine extends Document {
+export interface MedicineAttributes {
+  id?: string;
   name: string;
   description?: string;
   type: 'tablet' | 'capsule' | 'liquid' | 'injection' | 'other';
-  schedules: IMedicineSchedule[];
-  familyMemberId: mongoose.Types.ObjectId;
+  schedules: string;
+  familyMemberId: string;
   imageUrl?: string;
   notes?: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
-const MedicineScheduleSchema: Schema = new Schema({
-  time: { type: String, required: true },
-  dosage: { type: String, required: true },
-});
+class Medicine extends Model<MedicineAttributes> implements MedicineAttributes {
+  public id!: string;
+  public name!: string;
+  public description?: string;
+  public type!: 'tablet' | 'capsule' | 'liquid' | 'injection' | 'other';
+  public schedules!: string;
+  public familyMemberId!: string;
+  public imageUrl?: string;
+  public notes?: string;
 
-const MedicineSchema: Schema = new Schema({
-  name: { type: String, required: true },
-  description: { type: String },
-  type: { type: String, enum: ['tablet', 'capsule', 'liquid', 'injection', 'other'], required: true },
-  schedules: { type: [MedicineScheduleSchema], required: true },
-  familyMemberId: { type: Schema.Types.ObjectId, ref: 'FamilyMember', required: true },
-  imageUrl: { type: String },
-  notes: { type: String },
-}, { timestamps: true });
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
-export default mongoose.model<IMedicine>('Medicine', MedicineSchema);
+Medicine.init(
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    type: {
+      type: DataTypes.ENUM('tablet', 'capsule', 'liquid', 'injection', 'other'),
+      allowNull: false,
+    },
+    schedules: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      get() {
+        const value = this.getDataValue('schedules');
+        return JSON.parse(value);
+      },
+      set(value: any) {
+        this.setDataValue('schedules', JSON.stringify(value));
+      },
+    },
+    familyMemberId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: FamilyMember,
+        key: 'id',
+      },
+    },
+    imageUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    notes: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+  },
+  {
+    sequelize,
+    tableName: 'medicines',
+  }
+);
+
+Medicine.belongsTo(FamilyMember, { foreignKey: 'familyMemberId' });
+
+export default Medicine;

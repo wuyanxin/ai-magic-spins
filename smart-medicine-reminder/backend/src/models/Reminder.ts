@@ -1,21 +1,73 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../database';
+import Medicine from './Medicine';
+import FamilyMember from './FamilyMember';
 
-export interface IReminder extends Document {
-  medicineId: mongoose.Types.ObjectId;
-  familyMemberId: mongoose.Types.ObjectId;
+export interface ReminderAttributes {
+  id?: string;
+  medicineId: string;
+  familyMemberId: string;
   scheduledTime: Date;
-  status: 'pending' | 'sent' | 'confirmed' | 'cancelled';
+  status?: 'pending' | 'sent' | 'confirmed' | 'cancelled';
   message?: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
-const ReminderSchema: Schema = new Schema({
-  medicineId: { type: Schema.Types.ObjectId, ref: 'Medicine', required: true },
-  familyMemberId: { type: Schema.Types.ObjectId, ref: 'FamilyMember', required: true },
-  scheduledTime: { type: Date, required: true },
-  status: { type: String, enum: ['pending', 'sent', 'confirmed', 'cancelled'], default: 'pending' },
-  message: { type: String },
-}, { timestamps: true });
+class Reminder extends Model<ReminderAttributes> implements ReminderAttributes {
+  public id!: string;
+  public medicineId!: string;
+  public familyMemberId!: string;
+  public scheduledTime!: Date;
+  public status!: 'pending' | 'sent' | 'confirmed' | 'cancelled';
+  public message?: string;
 
-export default mongoose.model<IReminder>('Reminder', ReminderSchema);
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
+
+Reminder.init(
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
+    medicineId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: Medicine,
+        key: 'id',
+      },
+    },
+    familyMemberId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: FamilyMember,
+        key: 'id',
+      },
+    },
+    scheduledTime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.ENUM('pending', 'sent', 'confirmed', 'cancelled'),
+      defaultValue: 'pending',
+      allowNull: false,
+    },
+    message: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+  },
+  {
+    sequelize,
+    tableName: 'reminders',
+  }
+);
+
+Reminder.belongsTo(Medicine, { foreignKey: 'medicineId' });
+Reminder.belongsTo(FamilyMember, { foreignKey: 'familyMemberId' });
+
+export default Reminder;

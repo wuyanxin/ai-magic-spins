@@ -1,5 +1,6 @@
 import express from 'express';
 import Reminder from '../models/Reminder';
+import Medicine from '../models/Medicine';
 import FamilyMember from '../models/FamilyMember';
 import axios from 'axios';
 
@@ -7,9 +8,9 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const reminders = await Reminder.find()
-      .populate('medicineId')
-      .populate('familyMemberId');
+    const reminders = await Reminder.findAll({ 
+      include: [Medicine, FamilyMember] 
+    });
     res.json(reminders);
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });
@@ -18,9 +19,9 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const reminder = await Reminder.findById(req.params.id)
-      .populate('medicineId')
-      .populate('familyMemberId');
+    const reminder = await Reminder.findByPk(req.params.id, { 
+      include: [Medicine, FamilyMember] 
+    });
     if (!reminder) {
       return res.status(404).json({ message: 'Reminder not found' });
     }
@@ -32,9 +33,8 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const newReminder = new Reminder(req.body);
-    const savedReminder = await newReminder.save();
-    res.status(201).json(savedReminder);
+    const newReminder = await Reminder.create(req.body);
+    res.status(201).json(newReminder);
   } catch (error) {
     res.status(400).json({ message: (error as Error).message });
   }
@@ -42,16 +42,16 @@ router.post('/', async (req, res) => {
 
 router.post('/trigger/:id', async (req, res) => {
   try {
-    const reminder = await Reminder.findById(req.params.id)
-      .populate('medicineId')
-      .populate('familyMemberId');
+    const reminder = await Reminder.findByPk(req.params.id, { 
+      include: [Medicine, FamilyMember] 
+    });
     
     if (!reminder) {
       return res.status(404).json({ message: 'Reminder not found' });
     }
 
-    const familyMember = reminder.familyMemberId as any;
-    if (familyMember.feishuUserId) {
+    const familyMember = (reminder as any).FamilyMember;
+    if (familyMember && familyMember.feishuUserId) {
       await sendFeishuMessage(familyMember.feishuUserId, reminder);
     }
 
@@ -66,13 +66,13 @@ router.post('/trigger/:id', async (req, res) => {
 
 async function sendFeishuMessage(userId: string, reminder: any) {
   const token = await getFeishuToken();
-  const medicine = reminder.medicineId;
+  const medicine = reminder.Medicine;
   
   const message = {
     user_id: userId,
     msg_type: 'text',
     content: {
-      text: `\u63d0\u9192\uFF1A\u8BF7\u5403\u836F\uFF01\n\u836F\u54C1\uFF1A${medicine.name}\n\u65F6\u95F4\uFF1A${reminder.scheduledTime}\n\u91CF\uFF1A${medicine.schedules.map((s: any) => s.dosage).join(', ')}`
+      text: `\u63d0\u9192\uFF1A\u8BF7\u5403\u836F\uFF01\n\u836F\u54C1\uFF1A${medicine.name}\n\u65F6\u95F4\uFF1A${reminder.scheduledTime}\n\u91CF\uFF1A${JSON.parse(medicine.schedules).map((s: any) => s.dosage).join(', ')}`
     }
   };
 
@@ -93,14 +93,13 @@ async function getFeishuToken(): Promise<string> {
 
 router.put('/:id', async (req, res) => {
   try {
-    const updatedReminder = await Reminder.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    if (!updatedReminder) {
+    const [updated] = await Reminder.update(req.body, {
+      where: { id: req.params.id }
+    });
+    if (!updated) {
       return res.status(404).json({ message: 'Reminder not found' });
     }
+    const updatedReminder = await Reminder.findByPk(req.params.id);
     res.json(updatedReminder);
   } catch (error) {
     res.status(400).json({ message: (error as Error).message });
@@ -109,8 +108,10 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const deletedReminder = await Reminder.findByIdAndDelete(req.params.id);
-    if (!deletedReminder) {
+    const deleted = await Reminder.destroy({
+      where: { id: req.params.id }
+    });
+    if (!deleted) {
       return res.status(404).json({ message: 'Reminder not found' });
     }
     res.json({ message: 'Reminder deleted successfully' });
