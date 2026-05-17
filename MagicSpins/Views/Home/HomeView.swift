@@ -3,27 +3,29 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject var medicationViewModel: MedicationViewModel
     @EnvironmentObject var reminderViewModel: ReminderViewModel
+    @EnvironmentObject var familyMemberViewModel: FamilyMemberViewModel
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
-                    // Header
-                    headerSection
+                VStack(spacing: 16) {
+                    FamilyMemberSelector()
                     
-                    // Today's Progress
-                    progressSection
-                    
-                    // Today's Medications
-                    medicationListSection
+                    VStack(spacing: 20) {
+                        headerSection
+                        
+                        progressSection
+                        
+                        medicationListSection
+                    }
                 }
                 .padding()
             }
             .background(AppColors.background)
             .navigationTitle("今日用药")
             .refreshable {
-                medicationViewModel.loadMedications()
-                reminderViewModel.loadTodayRecords()
+                medicationViewModel.loadMedications(memberId: familyMemberViewModel.selectedMember?.id)
+                reminderViewModel.loadTodayRecords(memberId: familyMemberViewModel.selectedMember?.id)
             }
         }
     }

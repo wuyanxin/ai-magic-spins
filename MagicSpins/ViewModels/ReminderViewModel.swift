@@ -13,11 +13,11 @@ class ReminderViewModel: ObservableObject {
         loadTodayRecords()
     }
     
-    func loadTodayRecords() {
-        todayDoseRecords = databaseService.fetchDoseRecords(for: Date())
+    func loadTodayRecords(memberId: UUID? = nil) {
+        todayDoseRecords = databaseService.fetchDoseRecords(for: Date(), memberId: memberId)
         
         let today = Date()
-        let medications = databaseService.fetchAllMedications().filter { $0.isActive }
+        let medications = databaseService.fetchAllMedications(memberId: memberId).filter { $0.isActive }
         let calendar = Calendar.current
         
         for medication in medications {
@@ -36,6 +36,7 @@ class ReminderViewModel: ObservableObject {
                     if existingRecord == nil {
                         let record = DoseRecord(
                             medicationId: medication.id,
+                            memberId: memberId,
                             scheduledTime: scheduledTime,
                             status: .pending
                         )
@@ -45,7 +46,7 @@ class ReminderViewModel: ObservableObject {
             }
         }
         
-        todayDoseRecords = databaseService.fetchDoseRecords(for: Date())
+        todayDoseRecords = databaseService.fetchDoseRecords(for: Date(), memberId: memberId)
         categorizeDoses()
     }
     
@@ -67,6 +68,7 @@ class ReminderViewModel: ObservableObject {
             if let scheduledTime = calendar.date(from: components) {
                 let record = DoseRecord(
                     medicationId: medication.id,
+                    memberId: medication.memberId,
                     scheduledTime: scheduledTime,
                     status: .pending
                 )
@@ -74,7 +76,7 @@ class ReminderViewModel: ObservableObject {
             }
         }
         
-        loadTodayRecords()
+        loadTodayRecords(memberId: medication.memberId)
     }
     
     func markAsTaken(recordId: UUID) {
@@ -82,7 +84,7 @@ class ReminderViewModel: ObservableObject {
             record.status = .taken
             record.actualTime = Date()
             databaseService.updateDoseRecord(record)
-            loadTodayRecords()
+            loadTodayRecords(memberId: record.memberId)
         }
     }
     
@@ -91,7 +93,7 @@ class ReminderViewModel: ObservableObject {
             record.status = .skipped
             record.skippedReason = reason
             databaseService.updateDoseRecord(record)
-            loadTodayRecords()
+            loadTodayRecords(memberId: record.memberId)
         }
     }
     

@@ -23,11 +23,17 @@ struct ContentView: View {
                 }
                 .tag(2)
             
+            FamilyStatsView()
+                .tabItem {
+                    Label("家庭", systemImage: "person.3.fill")
+                }
+                .tag(3)
+            
             SettingsView()
                 .tabItem {
                     Label("设置", systemImage: "gearshape.fill")
                 }
-                .tag(3)
+                .tag(4)
         }
         .tint(AppColors.primary)
     }

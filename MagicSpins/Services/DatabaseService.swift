@@ -46,17 +46,24 @@ class DatabaseService {
         saveDoseRecords(records)
     }
     
-    func fetchAllMedications() -> [Medication] {
+    func fetchAllMedications(memberId: UUID? = nil) -> [Medication] {
         guard let data = userDefaults.data(forKey: medicationsKey) else {
             return []
         }
         do {
             let medications = try JSONDecoder().decode([Medication].self, from: data)
+            if let memberId = memberId {
+                return medications.filter { $0.memberId == memberId }
+            }
             return medications
         } catch {
             print("Failed to decode medications: \(error)")
             return []
         }
+    }
+    
+    func fetchMedications(for memberId: UUID) -> [Medication] {
+        return fetchAllMedications(memberId: memberId)
     }
     
     private func saveMedications(_ medications: [Medication]) {
@@ -82,16 +89,33 @@ class DatabaseService {
         }
     }
     
-    func fetchDoseRecords(for date: Date) -> [DoseRecord] {
+    func fetchDoseRecords(for date: Date, memberId: UUID? = nil) -> [DoseRecord] {
         let records = fetchAllDoseRecords()
         let startOfDay = date.startOfDay
         let endOfDay = date.endOfDay
-        return records.filter { $0.scheduledTime >= startOfDay && $0.scheduledTime <= endOfDay }
+        
+        var filteredRecords = records.filter { $0.scheduledTime >= startOfDay && $0.scheduledTime <= endOfDay }
+        
+        if let memberId = memberId {
+            filteredRecords = filteredRecords.filter { $0.memberId == memberId }
+        }
+        
+        return filteredRecords
     }
     
-    func fetchDoseRecords(from startDate: Date, to endDate: Date) -> [DoseRecord] {
+    func fetchDoseRecords(from startDate: Date, to endDate: Date, memberId: UUID? = nil) -> [DoseRecord] {
+        var records = fetchAllDoseRecords().filter { $0.scheduledTime >= startDate && $0.scheduledTime <= endDate }
+        
+        if let memberId = memberId {
+            records = records.filter { $0.memberId == memberId }
+        }
+        
+        return records
+    }
+    
+    func fetchDoseRecords(for memberId: UUID) -> [DoseRecord] {
         let records = fetchAllDoseRecords()
-        return records.filter { $0.scheduledTime >= startDate && $0.scheduledTime <= endDate }
+        return records.filter { $0.memberId == memberId }
     }
     
     private func fetchAllDoseRecords() -> [DoseRecord] {
@@ -116,8 +140,8 @@ class DatabaseService {
         }
     }
     
-    func calculateComplianceRate(from startDate: Date, to endDate: Date) -> Double {
-        let records = fetchDoseRecords(from: startDate, to: endDate)
+    func calculateComplianceRate(from startDate: Date, to endDate: Date, memberId: UUID? = nil) -> Double {
+        let records = fetchDoseRecords(from: startDate, to: endDate, memberId: memberId)
         guard !records.isEmpty else { return 0.0 }
         
         let completedCount = records.filter { $0.status == .taken || $0.status == .skipped }.count

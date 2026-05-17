@@ -9,6 +9,7 @@ struct Medication: Identifiable, Codable, Equatable {
     var category: MedicationCategory
     var notes: String?
     var isActive: Bool
+    var memberId: UUID?
     var createdAt: Date
     var updatedAt: Date
     
@@ -20,6 +21,7 @@ struct Medication: Identifiable, Codable, Equatable {
          category: MedicationCategory,
          notes: String? = nil,
          isActive: Bool = true,
+         memberId: UUID? = nil,
          createdAt: Date = Date(),
          updatedAt: Date = Date()) {
         self.id = id
@@ -30,6 +32,7 @@ struct Medication: Identifiable, Codable, Equatable {
         self.category = category
         self.notes = notes
         self.isActive = isActive
+        self.memberId = memberId
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }

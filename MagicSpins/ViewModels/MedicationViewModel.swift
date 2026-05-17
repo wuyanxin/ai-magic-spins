@@ -16,9 +16,9 @@ class MedicationViewModel: ObservableObject {
         filterTodayMedications()
     }
     
-    func loadMedications() {
+    func loadMedications(memberId: UUID? = nil) {
         isLoading = true
-        medications = databaseService.fetchAllMedications().filter { $0.isActive }
+        medications = databaseService.fetchAllMedications(memberId: memberId).filter { $0.isActive }
         filterTodayMedications()
         isLoading = false
     }
@@ -44,8 +44,10 @@ class MedicationViewModel: ObservableObject {
         }
     }
     
-    func addMedication(_ medication: Medication) {
-        databaseService.addMedication(medication)
+    func addMedication(_ medication: Medication, memberId: UUID? = nil) {
+        var newMedication = medication
+        newMedication.memberId = memberId
+        databaseService.addMedication(newMedication)
         
         let today = Date()
         let calendar = Calendar.current
@@ -59,6 +61,7 @@ class MedicationViewModel: ObservableObject {
             if let scheduledTime = calendar.date(from: components) {
                 let record = DoseRecord(
                     medicationId: medication.id,
+                    memberId: memberId,
                     scheduledTime: scheduledTime,
                     status: .pending
                 )
@@ -67,19 +70,19 @@ class MedicationViewModel: ObservableObject {
         }
         
         notificationService.scheduleAllNotifications(for: medication)
-        loadMedications()
+        loadMedications(memberId: memberId)
     }
     
     func updateMedication(_ medication: Medication) {
         databaseService.updateMedication(medication)
         notificationService.scheduleAllNotifications(for: medication)
-        loadMedications()
+        loadMedications(memberId: medication.memberId)
     }
     
     func deleteMedication(_ medication: Medication) {
         notificationService.cancelNotifications(for: medication)
         databaseService.deleteMedication(id: medication.id)
-        loadMedications()
+        loadMedications(memberId: medication.memberId)
     }
     
     func toggleMedicationActive(_ medication: Medication) {
