@@ -1,0 +1,98 @@
+import Foundation
+import Combine
+
+class ReminderViewModel: ObservableObject {
+    @Published var todayDoseRecords: [DoseRecord] = []
+    @Published var pendingDoses: [DoseRecord] = []
+    @Published var completedDoses: [DoseRecord] = []
+    @Published var skippedDoses: [DoseRecord] = []
+    
+    private let databaseService = DatabaseService.shared
+    
+    init() {
+        loadTodayRecords()
+    }
+    
+    func loadTodayRecords() {
+        do {
+            todayDoseRecords = try databaseService.fetchDoseRecords(for: Date())
+            categorizeDoses()
+        } catch {
+            print("Failed to load today's records: \(error)")
+        }
+    }
+    
+    func categorizeDoses() {
+        pendingDoses = todayDoseRecords.filter { $0.status == .pending }
+        completedDoses = todayDoseRecords.filter { $0.status == .taken }
+        skippedDoses = todayDoseRecords.filter { $0.status == .skipped }
+    }
+    
+    func createDoseRecords(for medication: Medication, on date: Date) {
+        let calendar = Calendar.current
+        
+        for reminderTime in medication.reminderTimes {
+            var components = calendar.dateComponents([.hour, .minute], from: reminderTime)
+            components.year = calendar.component(.year, from: date)
+            components.month = calendar.component(.month, from: date)
+            components.day = calendar.component(.day, from: date)
+            
+            if let scheduledTime = calendar.date(from: components) {
+                let record = DoseRecord(
+                    medicationId: medication.id,
+                    scheduledTime: scheduledTime,
+                    status: .pending
+                )
+                
+                do {
+                    try databaseService.addDoseRecord(record)
+                } catch {
+                    print("Failed to create dose record: \(error)")
+                }
+            }
+        }
+        
+        loadTodayRecords()
+    }
+    
+    func markAsTaken(recordId: UUID) {
+        if var record = todayDoseRecords.first(where: { $0.id == recordId }) {
+            record.status = .taken
+            record.actualTime = Date()
+            
+            do {
+                try databaseService.updateDoseRecord(record)
+                loadTodayRecords()
+            } catch {
+                print("Failed to update record: \(error)")
+            }
+        }
+    }
+    
+    func markAsSkipped(recordId: UUID, reason: String?) {
+        if var record = todayDoseRecords.first(where: { $0.id == recordId }) {
+            record.status = .skipped
+            record.skippedReason = reason
+            
+            do {
+                try databaseService.updateDoseRecord(record)
+                loadTodayRecords()
+            } catch {
+                print("Failed to update record: \(error)")
+            }
+        }
+    }
+    
+    func getRecord(for medicationId: UUID, at time: Date) -> DoseRecord? {
+        todayDoseRecords.first { record in
+            record.medicationId == medicationId &&
+            Calendar.current.isDate(record.scheduledTime, equalTo: time, toGranularity: .minute)
+        }
+    }
+    
+    func getCompletionRate() -> Double {
+        guard !todayDoseRecords.isEmpty else { return 0 }
+        let completed = completedDoses.count + skippedDoses.count
+        return Double(completed) / Double(todayDoseRecords.count) * 100
+    }
+}
