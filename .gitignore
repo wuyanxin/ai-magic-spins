@@ -1,0 +1,37 @@
+# macOS
+.DS_Store
+
+# Xcode
+build/
+*.xcuserstate
+*.xcuserdatad
+xcuserdata/
+*.xcworkspace
+!*.xcworkspace
+project.xcworkspace
+!project.xcworkspace
+
+# Swift Package Manager
+.swiftpm/
+Packages/xcshareddata/
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+
+# macOS
+*.icloud
+*.tmp
