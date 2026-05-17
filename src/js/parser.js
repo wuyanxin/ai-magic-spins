@@ -1,3 +1,6 @@
+import { AppState } from './state.js';
+import { UI } from './ui.js';
+
 const MedicationParser = {
     parseMedicationDescription(text) {
         if (!text || !text.trim()) {
