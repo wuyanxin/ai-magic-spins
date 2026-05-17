@@ -94,6 +94,11 @@
                             <label class="form-label">模型名称</label>
                             <input type="text" class="form-input" id="llmModel" placeholder="gpt-4o（默认）">
                         </div>
+                        <div class="form-group">
+                            <label class="form-label">CORS 代理（可选，解决跨域问题）</label>
+                            <input type="text" class="form-input" id="llmCorsProxy" placeholder="例如：https://corsproxy.io/?">
+                            <div class="form-hint">如果浏览器提示跨域错误，可使用 CORS 代理转发请求</div>
+                        </div>
                         <div class="action-buttons">
                             <button type="button" class="btn btn-primary btn-sm" id="saveLLMConfig">保存配置</button>
                             <button type="button" class="btn btn-secondary btn-sm" id="testLLMConnection">测试连接</button>

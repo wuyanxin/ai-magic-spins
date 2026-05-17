@@ -454,7 +454,7 @@ const App = {
         const endpoint = document.getElementById('llmEndpoint')?.value.trim();
         const apiKey = document.getElementById('llmApiKey')?.value.trim();
         const model = document.getElementById('llmModel')?.value.trim();
-        const systemPrompt = document.getElementById('llmSystemPrompt')?.value.trim();
+        const corsProxy = document.getElementById('llmCorsProxy')?.value.trim();
 
         if (!endpoint || !apiKey) {
             UI.showToast('请填写API地址和密钥');
@@ -463,7 +463,7 @@ const App = {
 
         const config = { endpoint, apiKey };
         if (model) config.model = model;
-        if (systemPrompt) config.systemPrompt = systemPrompt;
+        if (corsProxy) config.corsProxy = corsProxy;
 
         const success = LLMService.saveConfig(config);
         if (success) {

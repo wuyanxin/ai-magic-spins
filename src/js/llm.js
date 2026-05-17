@@ -22,6 +22,7 @@ const LLMService = {
         endpoint: '',
         apiKey: '',
         model: 'gpt-4o',
+        corsProxy: '',
         systemPrompt: DEFAULT_SYSTEM_PROMPT
     },
 
@@ -64,7 +65,11 @@ const LLMService = {
 
     async callAPI(messages) {
         try {
-            const response = await fetch(`${this.config.endpoint}/chat/completions`, {
+            const endpoint = this.config.corsProxy
+                ? this.config.corsProxy.replace(/\/?$/, '') + '/' + this.config.endpoint.replace(/^https?:\/\//, '')
+                : this.config.endpoint;
+            const url = `${endpoint}/chat/completions`;
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -95,6 +100,9 @@ const LLMService = {
             }
         } catch (error) {
             console.error('LLMService callAPI error:', error);
+            if (error.message && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
+                return { error: '跨域请求被阻止（CORS错误），请在LLM配置中填写CORS代理地址，例如：https://corsproxy.io/?' };
+            }
             return { error: '网络连接失败，请检查API配置' };
         }
     },
