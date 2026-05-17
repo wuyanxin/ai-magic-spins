@@ -1,27 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
-  Button, 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  IconButton,
-  Typography,
-  Box
+import {
+  Box, Button, Dialog, DialogTitle, DialogContent, DialogActions,
+  TextField, Select, MenuItem, FormControl, InputLabel, Typography, Fab,
+  Card, CardContent, IconButton, Chip, Stack
 } from '@mui/material';
-import { Add, Edit, Delete, Person } from '@mui/icons-material';
+import { Add, Edit, Delete, Person, Phone, Cake, FamilyRestroom } from '@mui/icons-material';
 import { FamilyMember } from '../types';
 import { familyApi } from '../api';
 
@@ -84,7 +67,7 @@ export const FamilyPage: React.FC = () => {
     };
     
     if (editingMember) {
-      await familyApi.update(editingMember._id, data);
+      await familyApi.update(editingMember.id, data);
     } else {
       await familyApi.create(data);
     }
@@ -101,60 +84,99 @@ export const FamilyPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ mt: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">家人管理</Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={() => handleOpen()}
-          startIcon={<Add />}
-        >
-          添加家人
-        </Button>
-      </Box>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>姓名</TableCell>
-              <TableCell>年龄</TableCell>
-              <TableCell>性别</TableCell>
-              <TableCell>电话</TableCell>
-              <TableCell>关系</TableCell>
-              <TableCell>飞书ID</TableCell>
-              <TableCell>操作</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {familyMembers.map((member) => (
-              <TableRow key={member._id}>
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Person sx={{ mr: 2 }} />
-                    {member.name}
-                  </Box>
-                </TableCell>
-                <TableCell>{member.age}</TableCell>
-                <TableCell>{member.gender === 'male' ? '男' : '女'}</TableCell>
-                <TableCell>{member.phone}</TableCell>
-                <TableCell>{member.relationship}</TableCell>
-                <TableCell>{member.feishuUserId || '-'}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleOpen(member)}>
-                    <Edit color="primary" />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(member._id)}>
-                    <Delete color="error" />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+    <Box>
+      <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>
+        家人管理
+      </Typography>
 
-      <Dialog open={open} onClose={handleClose}>
+      {familyMembers.length === 0 ? (
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <Person sx={{ fontSize: 80, color: '#ccc', mb: 2 }} />
+          <Typography variant="h6" color="textSecondary" gutterBottom>
+            暂无家人信息
+          </Typography>
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
+            点击下方按钮添加家人
+          </Typography>
+          <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>
+            添加家人
+          </Button>
+        </Box>
+      ) : (
+        <Stack spacing={2}>
+          {familyMembers.map((member) => (
+            <Card key={member.id}>
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Box sx={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: '50%',
+                      bgcolor: 'primary.main',
+                      color: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                      mr: 2
+                    }}>
+                      {member.name.charAt(0)}
+                    </Box>
+                    <Box>
+                      <Typography variant="h6">{member.name}</Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {member.relationship} · {member.gender === 'male' ? '男' : '女'} · {member.age}岁
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Box>
+                    <IconButton size="small" onClick={() => handleOpen(member)}>
+                      <Edit fontSize="small" />
+                    </IconButton>
+                    <IconButton size="small" onClick={() => handleDelete(member.id)}>
+                      <Delete fontSize="small" color="error" />
+                    </IconButton>
+                  </Box>
+                </Box>
+                
+                <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+                  <Chip 
+                    icon={<Phone />} 
+                    label={member.phone} 
+                    size="small" 
+                    variant="outlined"
+                  />
+                  {member.feishuUserId && (
+                    <Chip 
+                      label="已绑定飞书" 
+                      size="small" 
+                      color="success"
+                      variant="outlined"
+                    />
+                  )}
+                </Stack>
+              </CardContent>
+            </Card>
+          ))}
+        </Stack>
+      )}
+
+      <Fab 
+        color="primary" 
+        sx={{ 
+          position: 'fixed', 
+          bottom: 24, 
+          right: 24,
+          display: familyMembers.length === 0 ? 'none' : 'flex'
+        }}
+        onClick={() => handleOpen()}
+      >
+        <Add />
+      </Fab>
+
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{editingMember ? '编辑家人' : '添加家人'}</DialogTitle>
         <DialogContent>
           <TextField
@@ -164,38 +186,43 @@ export const FamilyPage: React.FC = () => {
             fullWidth
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            sx={{ mb: 2, mt: 1 }}
           />
-          <TextField
-            margin="dense"
-            label="年龄"
-            type="number"
-            fullWidth
-            value={formData.age}
-            onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-          />
-          <FormControl fullWidth margin="dense">
-            <InputLabel>性别</InputLabel>
-            <Select
-              value={formData.gender}
-              onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male' | 'female' })}
-            >
-              <MenuItem value="male">男</MenuItem>
-              <MenuItem value="female">女</MenuItem>
-            </Select>
-          </FormControl>
+          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+            <TextField
+              label="年龄"
+              type="number"
+              fullWidth
+              value={formData.age}
+              onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+            />
+            <FormControl fullWidth>
+              <InputLabel>性别</InputLabel>
+              <Select
+                value={formData.gender}
+                label="性别"
+                onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male' | 'female' })}
+              >
+                <MenuItem value="male">男</MenuItem>
+                <MenuItem value="female">女</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           <TextField
             margin="dense"
             label="电话"
             fullWidth
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            sx={{ mb: 2 }}
           />
           <TextField
             margin="dense"
-            label="关系"
+            label="关系（如：父亲、母亲）"
             fullWidth
             value={formData.relationship}
             onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
+            sx={{ mb: 2 }}
           />
           <TextField
             margin="dense"
@@ -205,9 +232,9 @@ export const FamilyPage: React.FC = () => {
             onChange={(e) => setFormData({ ...formData, feishuUserId: e.target.value })}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>取消</Button>
-          <Button onClick={handleSubmit}>保存</Button>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleClose} fullWidth>取消</Button>
+          <Button onClick={handleSubmit} variant="contained" fullWidth>保存</Button>
         </DialogActions>
       </Dialog>
     </Box>

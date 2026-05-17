@@ -1,5 +1,5 @@
 export interface FamilyMember {
-  _id: string;
+  id: string;
   name: string;
   age: number;
   gender: 'male' | 'female';
@@ -17,7 +17,7 @@ export interface MedicineSchedule {
 }
 
 export interface Medicine {
-  _id: string;
+  id: string;
   name: string;
   description?: string;
   type: 'tablet' | 'capsule' | 'liquid' | 'injection' | 'other';
@@ -30,7 +30,7 @@ export interface Medicine {
 }
 
 export interface Reminder {
-  _id: string;
+  id: string;
   medicineId: string | Medicine;
   familyMemberId: string | FamilyMember;
   scheduledTime: string;

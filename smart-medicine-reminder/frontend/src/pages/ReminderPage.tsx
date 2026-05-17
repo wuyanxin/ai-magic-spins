@@ -1,27 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
-  Button, 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  IconButton,
-  Typography,
-  Box,
-  Chip,
-  Alert
+import {
+  Box, Button, Dialog, DialogTitle, DialogContent, DialogActions,
+  TextField, Select, MenuItem, FormControl, InputLabel, Typography, Fab,
+  Card, CardContent, IconButton, Chip, Stack, Alert
 } from '@mui/material';
 import { Add, Edit, Delete, Notifications, Send, Schedule } from '@mui/icons-material';
 import { Reminder, Medicine, FamilyMember } from '../types';
@@ -101,9 +82,9 @@ export const ReminderPage: React.FC = () => {
     };
     
     if (editingReminder) {
-      await reminderApi.update(editingReminder._id, data);
+      await reminderApi.update(editingReminder.id, data);
     } else {
-      await reminderApi.create(data);
+      await reminderApi.create(data as any);
     }
     
     fetchReminders();
@@ -130,41 +111,40 @@ export const ReminderPage: React.FC = () => {
   };
 
   const getMedicineName = (medicineId: string | Medicine) => {
-    const id = typeof medicineId === 'string' ? medicineId : medicineId._id;
-    const medicine = medicines.find(m => m._id === id);
+    const id = typeof medicineId === 'string' ? medicineId : medicineId.id;
+    const medicine = medicines.find(m => m.id === id);
     return medicine?.name || '未知';
   };
 
   const getMemberName = (memberId: string | FamilyMember) => {
-    const id = typeof memberId === 'string' ? memberId : memberId._id;
-    const member = familyMembers.find(m => m._id === id);
+    const id = typeof memberId === 'string' ? memberId : memberId.id;
+    const member = familyMembers.find(m => m.id === id);
     return member?.name || '未知';
   };
 
-  const getStatusName = (status: string) => {
+  const getStatusName = (status?: string) => {
     const statuses: Record<string, string> = {
       pending: '待发送',
       sent: '已发送',
       confirmed: '已确认',
       cancelled: '已取消'
     };
-    return statuses[status] || status;
+    return statuses[status || 'pending'] || '待发送';
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status?: string) => {
     const colors: Record<string, string> = {
       pending: 'warning',
       sent: 'primary',
       confirmed: 'success',
       cancelled: 'error'
     };
-    return colors[status] || 'default';
+    return colors[status || 'pending'] || 'warning';
   };
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString('zh-CN', {
-      year: 'numeric',
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
@@ -173,101 +153,145 @@ export const ReminderPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ mt: 3 }}>
+    <Box>
+      <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>
+        提醒管理
+      </Typography>
+
       {triggerMessage && (
-        <Alert severity={triggerMessage.includes('失败') ? 'error' : 'success'} sx={{ mb: 3 }}>
+        <Alert severity={triggerMessage.includes('失败') ? 'error' : 'success'} sx={{ mb: 2 }}>
           {triggerMessage}
         </Alert>
       )}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">提醒管理</Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={() => handleOpen()}
-          startIcon={<Add />}
-        >
-          添加提醒
-        </Button>
-      </Box>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>药品</TableCell>
-              <TableCell>提醒对象</TableCell>
-              <TableCell>提醒时间</TableCell>
-              <TableCell>状态</TableCell>
-              <TableCell>操作</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {reminders.map((reminder) => (
-              <TableRow key={reminder._id}>
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Notifications sx={{ mr: 2 }} />
-                    {getMedicineName(reminder.medicineId)}
-                  </Box>
-                </TableCell>
-                <TableCell>{getMemberName(reminder.familyMemberId)}</TableCell>
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Schedule sx={{ mr: 1 }} />
-                    {formatTime(reminder.scheduledTime)}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Chip 
-                    label={getStatusName(reminder.status || 'pending')} 
-                    color={getStatusColor(reminder.status || 'pending') as any} 
-                    size="small" 
-                  />
-                </TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleOpen(reminder)}>
-                    <Edit color="primary" />
-                  </IconButton>
-                  <IconButton 
-                    onClick={() => handleTrigger(reminder._id)}
-                    disabled={(reminder.status || 'pending') === 'sent'}
-                  >
-                    <Send color={(reminder.status || 'pending') === 'sent' ? 'disabled' : 'secondary'} />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(reminder._id)}>
-                    <Delete color="error" />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
 
-      <Dialog open={open} onClose={handleClose} maxWidth="md">
+      {reminders.length === 0 ? (
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <Notifications sx={{ fontSize: 80, color: '#ccc', mb: 2 }} />
+          <Typography variant="h6" color="textSecondary" gutterBottom>
+            暂无提醒
+          </Typography>
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
+            点击下方按钮创建提醒
+          </Typography>
+          <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>
+            添加提醒
+          </Button>
+        </Box>
+      ) : (
+        <Stack spacing={2}>
+          {reminders.map((reminder) => (
+            <Card key={reminder.id}>
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flex: 1 }}>
+                    <Box sx={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 2,
+                      bgcolor: 'warning.main',
+                      color: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mr: 2,
+                      '& svg': { fontSize: 28 }
+                    }}>
+                      <Notifications />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="h6">{getMedicineName(reminder.medicineId)}</Typography>
+                      <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+                        <Chip 
+                          label={getStatusName(reminder.status)} 
+                          size="small" 
+                          color={getStatusColor(reminder.status) as any}
+                        />
+                        <Typography variant="body2" color="textSecondary">
+                          服用人：{getMemberName(reminder.familyMemberId)}
+                        </Typography>
+                      </Stack>
+                    </Box>
+                  </Box>
+                  <Box>
+                    <IconButton size="small" onClick={() => handleOpen(reminder)}>
+                      <Edit fontSize="small" />
+                    </IconButton>
+                    <IconButton size="small" onClick={() => handleDelete(reminder.id)}>
+                      <Delete fontSize="small" color="error" />
+                    </IconButton>
+                  </Box>
+                </Box>
+                
+                <Box sx={{ 
+                  mt: 2, 
+                  p: 2, 
+                  bgcolor: 'background.default', 
+                  borderRadius: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Schedule sx={{ fontSize: 18, mr: 1, color: 'text.secondary' }} />
+                    <Typography variant="body2">
+                      {formatTime(reminder.scheduledTime)}
+                    </Typography>
+                  </Box>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    startIcon={<Send />}
+                    disabled={(reminder.status || 'pending') === 'sent'}
+                    onClick={() => handleTrigger(reminder.id)}
+                  >
+                    发送
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </Stack>
+      )}
+
+      <Fab 
+        color="primary" 
+        sx={{ 
+          position: 'fixed', 
+          bottom: 24, 
+          right: 24,
+          display: reminders.length === 0 ? 'none' : 'flex'
+        }}
+        onClick={() => handleOpen()}
+      >
+        <Add />
+      </Fab>
+
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{editingReminder ? '编辑提醒' : '添加提醒'}</DialogTitle>
         <DialogContent>
-          <FormControl fullWidth margin="dense">
+          <FormControl fullWidth sx={{ mb: 2, mt: 1 }}>
             <InputLabel>选择药品</InputLabel>
             <Select
               value={formData.medicineId}
+              label="选择药品"
               onChange={(e) => setFormData({ ...formData, medicineId: e.target.value })}
             >
               {medicines.map(medicine => (
-                <MenuItem key={medicine._id} value={medicine._id}>
+                <MenuItem key={medicine.id} value={medicine.id}>
                   {medicine.name}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-          <FormControl fullWidth margin="dense">
+          <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel>选择提醒对象</InputLabel>
             <Select
               value={formData.familyMemberId}
+              label="选择提醒对象"
               onChange={(e) => setFormData({ ...formData, familyMemberId: e.target.value })}
             >
               {familyMembers.map(member => (
-                <MenuItem key={member._id} value={member._id}>
+                <MenuItem key={member.id} value={member.id}>
                   {member.name}
                 </MenuItem>
               ))}
@@ -280,6 +304,8 @@ export const ReminderPage: React.FC = () => {
             fullWidth
             value={formData.scheduledTime}
             onChange={(e) => setFormData({ ...formData, scheduledTime: e.target.value })}
+            InputLabelProps={{ shrink: true }}
+            sx={{ mb: 2 }}
           />
           <TextField
             margin="dense"
@@ -291,9 +317,9 @@ export const ReminderPage: React.FC = () => {
             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>取消</Button>
-          <Button onClick={handleSubmit}>保存</Button>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleClose} fullWidth>取消</Button>
+          <Button onClick={handleSubmit} variant="contained" fullWidth>保存</Button>
         </DialogActions>
       </Dialog>
     </Box>

@@ -12,7 +12,7 @@ export const familyApi = {
     const response = await axios.get(`${API_BASE_URL}/family/${id}`);
     return response.data;
   },
-  create: async (member: Omit<FamilyMember, '_id' | 'createdAt' | 'updatedAt'>): Promise<FamilyMember> => {
+  create: async (member: Omit<FamilyMember, 'id' | 'createdAt' | 'updatedAt'>): Promise<FamilyMember> => {
     const response = await axios.post(`${API_BASE_URL}/family`, member);
     return response.data;
   },
@@ -34,7 +34,7 @@ export const medicineApi = {
     const response = await axios.get(`${API_BASE_URL}/medicine/${id}`);
     return response.data;
   },
-  create: async (medicine: Omit<Medicine, '_id' | 'createdAt' | 'updatedAt'>): Promise<Medicine> => {
+  create: async (medicine: Omit<Medicine, 'id' | 'createdAt' | 'updatedAt'>): Promise<Medicine> => {
     const response = await axios.post(`${API_BASE_URL}/medicine`, medicine);
     return response.data;
   },
@@ -60,7 +60,7 @@ export const reminderApi = {
     const response = await axios.get(`${API_BASE_URL}/reminder/${id}`);
     return response.data;
   },
-  create: async (reminder: Omit<Reminder, '_id' | 'createdAt' | 'updatedAt'>): Promise<Reminder> => {
+  create: async (reminder: Omit<Reminder, 'id' | 'createdAt' | 'updatedAt'>): Promise<Reminder> => {
     const response = await axios.post(`${API_BASE_URL}/reminder`, reminder);
     return response.data;
   },

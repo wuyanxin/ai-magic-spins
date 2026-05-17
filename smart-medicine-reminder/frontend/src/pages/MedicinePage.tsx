@@ -1,29 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
-  Button, 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  IconButton,
-  Typography,
-  Box,
-  Grid,
-  Chip
+import {
+  Box, Button, Dialog, DialogTitle, DialogContent, DialogActions,
+  TextField, Select, MenuItem, FormControl, InputLabel, Typography, Fab,
+  Card, CardContent, IconButton, Chip, Stack, Grid
 } from '@mui/material';
-import { Add, Edit, Delete, Tablet, PhotoCamera, TextFields } from '@mui/icons-material';
+import { Add, Edit, Delete, Tablet, PhotoCamera, TextFields, Schedule } from '@mui/icons-material';
 import { Medicine, FamilyMember, MedicineSchedule } from '../types';
 import { medicineApi, familyApi } from '../api';
 
@@ -70,7 +51,9 @@ export const MedicinePage: React.FC = () => {
         type: medicine.type,
         familyMemberId: typeof medicine.familyMemberId === 'string' ? medicine.familyMemberId : '',
         notes: medicine.notes || '',
-        schedules: medicine.schedules.length > 0 ? medicine.schedules : [{ time: '', dosage: '' }]
+        schedules: Array.isArray(medicine.schedules) && medicine.schedules.length > 0 
+          ? medicine.schedules 
+          : [{ time: '', dosage: '' }]
       });
     } else {
       setEditingMedicine(null);
@@ -125,13 +108,13 @@ export const MedicinePage: React.FC = () => {
 
     const data = {
       ...formData,
-      familyMemberId: formData.familyMemberId
+      schedules: JSON.stringify(formData.schedules)
     };
     
     if (editingMedicine) {
-      await medicineApi.update(editingMedicine._id, data);
+      await medicineApi.update(editingMedicine.id, data as any);
     } else {
-      await medicineApi.create(data);
+      await medicineApi.create(data as any);
     }
     
     fetchMedicines();
@@ -152,8 +135,8 @@ export const MedicinePage: React.FC = () => {
   };
 
   const getMemberName = (memberId: string | FamilyMember) => {
-    const id = typeof memberId === 'string' ? memberId : memberId._id;
-    const member = familyMembers.find(m => m._id === id);
+    const id = typeof memberId === 'string' ? memberId : memberId.id;
+    const member = familyMembers.find(m => m.id === id);
     return member?.name || '未知';
   };
 
@@ -169,77 +152,110 @@ export const MedicinePage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ mt: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">药品管理</Typography>
-        <Box>
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            onClick={handleSmartOpen}
-            startIcon={<PhotoCamera />}
-            sx={{ mr: 2 }}
-          >
-            智能添加
-          </Button>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={() => handleOpen()}
-            startIcon={<Add />}
-          >
-            手动添加
-          </Button>
-        </Box>
-      </Box>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>药品名称</TableCell>
-              <TableCell>类型</TableCell>
-              <TableCell>关联家人</TableCell>
-              <TableCell>服用时间</TableCell>
-              <TableCell>操作</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {medicines.map((medicine) => (
-              <TableRow key={medicine._id}>
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Tablet sx={{ mr: 2 }} />
-                    {medicine.name}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Chip label={getTypeName(medicine.type)} size="small" />
-                </TableCell>
-                <TableCell>{getMemberName(medicine.familyMemberId)}</TableCell>
-                <TableCell>
-                  <Box>
-                    {medicine.schedules.map((s, i) => (
-                      <Typography key={i} variant="body2">
-                        {s.time} - {s.dosage}
-                      </Typography>
-                    ))}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleOpen(medicine)}>
-                    <Edit color="primary" />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(medicine._id)}>
-                    <Delete color="error" />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+    <Box>
+      <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>
+        药品管理
+      </Typography>
 
-      <Dialog open={open} onClose={handleClose} maxWidth="md">
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 3 }}>
+        <Button 
+          variant="contained" 
+          color="secondary"
+          fullWidth
+          size="large"
+          startIcon={<PhotoCamera />}
+          onClick={handleSmartOpen}
+          sx={{ py: 1.5 }}
+        >
+          智能添加
+        </Button>
+        <Button 
+          variant="outlined" 
+          fullWidth
+          size="large"
+          startIcon={<Add />}
+          onClick={() => handleOpen()}
+          sx={{ py: 1.5 }}
+        >
+          手动添加
+        </Button>
+      </Stack>
+
+      {medicines.length === 0 ? (
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <Tablet sx={{ fontSize: 80, color: '#ccc', mb: 2 }} />
+          <Typography variant="h6" color="textSecondary" gutterBottom>
+            暂无药品信息
+          </Typography>
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
+            点击上方按钮添加药品
+          </Typography>
+        </Box>
+      ) : (
+        <Stack spacing={2}>
+          {medicines.map((medicine) => (
+            <Card key={medicine.id}>
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flex: 1 }}>
+                    <Box sx={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 2,
+                      bgcolor: 'secondary.main',
+                      color: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mr: 2,
+                      '& svg': { fontSize: 28 }
+                    }}>
+                      <Tablet />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="h6">{medicine.name}</Typography>
+                      <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+                        <Chip label={getTypeName(medicine.type)} size="small" />
+                        <Typography variant="body2" color="textSecondary">
+                          服用人：{getMemberName(medicine.familyMemberId)}
+                        </Typography>
+                      </Stack>
+                    </Box>
+                  </Box>
+                  <Box>
+                    <IconButton size="small" onClick={() => handleOpen(medicine)}>
+                      <Edit fontSize="small" />
+                    </IconButton>
+                    <IconButton size="small" onClick={() => handleDelete(medicine.id)}>
+                      <Delete fontSize="small" color="error" />
+                    </IconButton>
+                  </Box>
+                </Box>
+                
+                <Box sx={{ mt: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <Schedule sx={{ fontSize: 18, mr: 1, color: 'text.secondary' }} />
+                    <Typography variant="body2" color="textSecondary">服用时间</Typography>
+                  </Box>
+                  <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                    {Array.isArray(medicine.schedules) && medicine.schedules.map((s: any, i: number) => (
+                      <Chip
+                        key={i}
+                        label={`${s.time} - ${s.dosage}`}
+                        size="small"
+                        variant="outlined"
+                        color="primary"
+                      />
+                    ))}
+                  </Stack>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </Stack>
+      )}
+
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{editingMedicine ? '编辑药品' : '手动添加药品'}</DialogTitle>
         <DialogContent>
           <TextField
@@ -249,20 +265,13 @@ export const MedicinePage: React.FC = () => {
             fullWidth
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            sx={{ mb: 2, mt: 1 }}
           />
-          <TextField
-            margin="dense"
-            label="描述"
-            fullWidth
-            multiline
-            rows={2}
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          />
-          <FormControl fullWidth margin="dense">
+          <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel>药品类型</InputLabel>
             <Select
               value={formData.type}
+              label="药品类型"
               onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
             >
               <MenuItem value="tablet">片剂</MenuItem>
@@ -272,56 +281,47 @@ export const MedicinePage: React.FC = () => {
               <MenuItem value="other">其他</MenuItem>
             </Select>
           </FormControl>
-          <FormControl fullWidth margin="dense">
+          <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel>关联家人</InputLabel>
             <Select
               value={formData.familyMemberId}
+              label="关联家人"
               onChange={(e) => setFormData({ ...formData, familyMemberId: e.target.value })}
             >
               {familyMembers.map(member => (
-                <MenuItem key={member._id} value={member._id}>
+                <MenuItem key={member.id} value={member.id}>
                   {member.name}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" gutterBottom>服用时间</Typography>
-            {formData.schedules.map((schedule, index) => (
-              <Grid container spacing={2} key={index} sx={{ mb: 2 }}>
-                <Grid item xs={5}>
-                  <TextField
-                    label="时间"
-                    type="time"
-                    value={schedule.time}
-                    onChange={(e) => handleScheduleChange(index, 'time', e.target.value)}
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={5}>
-                  <TextField
-                    label="剂量"
-                    value={schedule.dosage}
-                    onChange={(e) => handleScheduleChange(index, 'dosage', e.target.value)}
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    disabled={formData.schedules.length === 1}
-                    onClick={() => removeSchedule(index)}
-                  >
-                    删除
-                  </Button>
-                </Grid>
-              </Grid>
-            ))}
-            <Button variant="outlined" onClick={addSchedule}>
-              添加时间
-            </Button>
-          </Box>
+          
+          <Typography variant="subtitle2" sx={{ mb: 1 }}>服用时间</Typography>
+          {formData.schedules.map((schedule, index) => (
+            <Box key={index} sx={{ display: 'flex', gap: 1, mb: 1, alignItems: 'center' }}>
+              <TextField
+                type="time"
+                size="small"
+                value={schedule.time}
+                onChange={(e) => handleScheduleChange(index, 'time', e.target.value)}
+                sx={{ flex: 1 }}
+              />
+              <TextField
+                size="small"
+                placeholder="剂量"
+                value={schedule.dosage}
+                onChange={(e) => handleScheduleChange(index, 'dosage', e.target.value)}
+                sx={{ flex: 1 }}
+              />
+              {formData.schedules.length > 1 && (
+                <IconButton size="small" onClick={() => removeSchedule(index)}>
+                  <Delete fontSize="small" />
+                </IconButton>
+              )}
+            </Box>
+          ))}
+          <Button size="small" onClick={addSchedule} sx={{ mb: 2 }}>添加时间</Button>
+
           <TextField
             margin="dense"
             label="备注"
@@ -332,70 +332,57 @@ export const MedicinePage: React.FC = () => {
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>取消</Button>
-          <Button onClick={handleSubmit}>保存</Button>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleClose} fullWidth>取消</Button>
+          <Button onClick={handleSubmit} variant="contained" fullWidth>保存</Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={smartOpen} onClose={handleSmartClose} maxWidth="md">
+      <Dialog open={smartOpen} onClose={handleSmartClose} maxWidth="sm" fullWidth>
         <DialogTitle>智能添加药品</DialogTitle>
         <DialogContent>
-          <Typography variant="body1" paragraph>
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
             通过上传药品图片或输入药品文字信息，系统将自动识别药品信息和服用时间。
           </Typography>
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              <PhotoCamera sx={{ mr: 1 }} />
-              上传图片识别
-            </Typography>
-            <Button
-              variant="contained"
-              component="label"
-              fullWidth
-            >
-              选择图片
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                      setSmartData({ ...smartData, imageData: event.target?.result as string });
-                    };
-                    reader.readAsDataURL(file);
-                  }
-                }}
-              />
-            </Button>
-            {smartData.imageData && (
-              <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                图片已上传
-              </Typography>
-            )}
-          </Box>
-          <Box>
-            <Typography variant="subtitle1" gutterBottom>
-              <TextFields sx={{ mr: 1 }} />
-              或输入文字描述
-            </Typography>
-            <TextField
-              label="药品信息描述"
-              multiline
-              rows={4}
-              fullWidth
-              placeholder="请输入药品名称、规格、服用时间等信息..."
-              value={smartData.textData}
-              onChange={(e) => setSmartData({ ...smartData, textData: e.target.value })}
+          
+          <Button
+            variant="outlined"
+            fullWidth
+            component="label"
+            startIcon={<PhotoCamera />}
+            sx={{ mb: 3, py: 1.5 }}
+          >
+            {smartData.imageData ? '图片已选择' : '上传药品图片'}
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (event) => {
+                    setSmartData({ ...smartData, imageData: event.target?.result as string });
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
             />
-          </Box>
+          </Button>
+
+          <Typography variant="body2" sx={{ mb: 1 }}>或输入文字描述</Typography>
+          <TextField
+            multiline
+            rows={4}
+            fullWidth
+            placeholder="请输入药品名称、规格、服用时间等信息..."
+            value={smartData.textData}
+            onChange={(e) => setSmartData({ ...smartData, textData: e.target.value })}
+          />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleSmartClose}>取消</Button>
-          <Button onClick={handleSmartSubmit}>智能识别</Button>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleSmartClose} fullWidth>取消</Button>
+          <Button onClick={handleSmartSubmit} variant="contained" fullWidth>智能识别</Button>
         </DialogActions>
       </Dialog>
     </Box>
