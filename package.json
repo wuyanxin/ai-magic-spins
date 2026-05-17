@@ -1,0 +1,15 @@
+{
+  "name": "medication-reminder",
+  "version": "1.0.0",
+  "description": "日常用药提醒助手 - 支持LLM智能导入",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server . -p 3000 -c-1 -o",
+    "dev": "http-server . -p 3000 -c-1"
+  },
+  "keywords": ["medication", "reminder", "health"],
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
