@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { FamilyMember, Medicine, Reminder } from '../types';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = '/api';
 
 export const familyApi = {
   getAll: async (): Promise<FamilyMember[]> => {
