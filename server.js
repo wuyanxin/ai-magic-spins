@@ -1,3 +1,4 @@
+require('dotenv').config();
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -16,6 +17,10 @@ const MIME_TYPES = {
     '.ico': 'image/x-icon'
 };
 
+const llmEndpoint = process.env.LLM_ENDPOINT;
+const llmApiKey = process.env.LLM_API_KEY;
+const llmModel = process.env.LLM_MODEL || 'gpt-4o';
+
 function serveStatic(req, res) {
     let filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
     const ext = path.extname(filePath);
@@ -31,33 +36,41 @@ function serveStatic(req, res) {
     });
 }
 
+function handleGetConfig(req, res) {
+    const configured = !!(llmEndpoint && llmApiKey && llmApiKey !== 'your-api-key-here');
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({
+        configured,
+        endpoint: configured ? llmEndpoint : '',
+        model: configured ? llmModel : ''
+    }));
+}
+
 async function handleLLMProxy(req, res) {
+    if (!llmEndpoint || !llmApiKey || llmApiKey === 'your-api-key-here') {
+        res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ error: '请先配置 .env 文件中的 LLM_API_KEY' }));
+        return;
+    }
+
     let body = '';
     req.on('data', chunk => body += chunk);
     req.on('end', async () => {
         try {
-            const { endpoint, apiKey, model, messages } = JSON.parse(body);
-            console.log(`[LLM代理] 收到请求 → ${model || 'gpt-4o'} @ ${endpoint}`);
-            console.log(`[LLM代理] 消息数: ${messages?.length || 0}`);
+            const { messages } = JSON.parse(body);
+            console.log(`[LLM代理] 收到请求, 模型: ${llmModel}, 消息数: ${messages?.length || 0}`);
 
-            if (!endpoint || !apiKey) {
-                console.log('[LLM代理] 错误: 缺少API地址或密钥');
-                res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
-                res.end(JSON.stringify({ error: '缺少API地址或密钥' }));
-                return;
-            }
-
-            const url = `${endpoint.replace(/\/$/, '')}/chat/completions`;
-            console.log(`[LLM代理] 转发请求到: ${url.replace(apiKey, '***')}`);
+            const url = `${llmEndpoint.replace(/\/$/, '')}/chat/completions`;
+            console.log(`[LLM代理] 转发请求到: ${url}`);
 
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
+                    'Authorization': `Bearer ${llmApiKey}`
                 },
                 body: JSON.stringify({
-                    model: model || 'gpt-4o',
+                    model: llmModel,
                     messages: messages,
                     response_format: { type: 'json_object' }
                 })
@@ -65,7 +78,7 @@ async function handleLLMProxy(req, res) {
 
             if (!response.ok) {
                 const errorText = await response.text().catch(() => '');
-                console.log(`[LLM代理] API响应错误: ${response.status}`);
+                console.log(`[LLM代理] API错误: ${response.status}`);
                 res.writeHead(response.status, { 'Content-Type': 'application/json; charset=utf-8' });
                 res.end(JSON.stringify({
                     error: `API错误: ${response.status} ${response.statusText}${errorText ? ' - ' + errorText : ''}`
@@ -74,7 +87,7 @@ async function handleLLMProxy(req, res) {
             }
 
             const data = await response.json();
-            console.log(`[LLM代理] 请求成功, 响应已返回`);
+            console.log(`[LLM代理] 请求成功`);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify(data));
         } catch (error) {
@@ -83,6 +96,53 @@ async function handleLLMProxy(req, res) {
             res.end(JSON.stringify({ error: `代理请求失败: ${error.message}` }));
         }
     });
+}
+
+async function handleTestConnection(req, res) {
+    if (!llmEndpoint || !llmApiKey || llmApiKey === 'your-api-key-here') {
+        res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ error: '请先配置 .env 文件中的 LLM_API_KEY' }));
+        return;
+    }
+
+    try {
+        const url = `${llmEndpoint.replace(/\/$/, '')}/chat/completions`;
+        console.log(`[LLM测试] 测试连接: ${url}`);
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${llmApiKey}`
+            },
+            body: JSON.stringify({
+                model: llmModel,
+                messages: [
+                    { role: 'system', content: '你是一个助手。' },
+                    { role: 'user', content: '回复"连接成功"四个字。' }
+                ]
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text().catch(() => '');
+            console.log(`[LLM测试] 失败: ${response.status}`);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({
+                success: false,
+                error: `API错误: ${response.status} ${response.statusText}${errorText ? ' - ' + errorText : ''}`
+            }));
+            return;
+        }
+
+        console.log(`[LLM测试] 连接成功`);
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ success: true }));
+    } catch (error) {
+        console.log(`[LLM测试] 异常: ${error.message}`);
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ success: false, error: `连接失败: ${error.message}` }));
+    }
 }
 
 const server = http.createServer((req, res) => {
@@ -96,16 +156,23 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    if (req.method === 'POST' && req.url === '/api/llm/chat') {
+    if (req.method === 'GET' && req.url === '/api/llm/config') {
+        handleGetConfig(req, res);
+    } else if (req.method === 'POST' && req.url === '/api/llm/chat') {
         handleLLMProxy(req, res);
+    } else if (req.method === 'POST' && req.url === '/api/llm/test') {
+        handleTestConnection(req, res);
     } else {
-        console.log(`[静态文件] ${req.url}`);
         serveStatic(req, res);
     }
 });
 
 server.listen(PORT, () => {
+    const configured = !!(llmEndpoint && llmApiKey && llmApiKey !== 'your-api-key-here');
     console.log(`💊 用药提醒服务已启动`);
     console.log(`   本地访问: http://localhost:${PORT}`);
-    console.log(`   LLM代理:  http://localhost:${PORT}/api/llm/chat`);
+    console.log(`   LLM状态: ${configured ? '✅ 已配置 (' + llmModel + ')' : '⚠️ 未配置 (请编辑 .env 文件)'}`);
+    if (configured) {
+        console.log(`   LLM接口: ${llmEndpoint}`);
+    }
 });

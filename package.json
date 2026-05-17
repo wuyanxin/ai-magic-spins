@@ -7,9 +7,16 @@
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "keywords": ["medication", "reminder", "health"],
+  "keywords": [
+    "medication",
+    "reminder",
+    "health"
+  ],
   "license": "MIT",
   "devDependencies": {
     "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2"
   }
 }

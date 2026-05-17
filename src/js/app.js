@@ -158,20 +158,6 @@ const App = {
             });
         });
 
-        const saveLLMConfigBtn = document.getElementById('saveLLMConfig');
-        if (saveLLMConfigBtn) {
-            saveLLMConfigBtn.addEventListener('click', () => {
-                App.saveLLMConfig();
-            });
-        }
-
-        const testLLMConnectionBtn = document.getElementById('testLLMConnection');
-        if (testLLMConnectionBtn) {
-            testLLMConnectionBtn.addEventListener('click', () => {
-                App.testLLMConnection();
-            });
-        }
-
         document.getElementById('closeConfirmModal').addEventListener('click', () => {
             UI.closeConfirmModal();
         });
@@ -430,7 +416,7 @@ const App = {
         }
 
         if (!LLMService.isConfigured()) {
-            UI.showToast('请先配置LLM API');
+            UI.showToast('请先在 .env 文件中配置 LLM_API_KEY');
             return;
         }
 
@@ -449,46 +435,6 @@ const App = {
         if (!file) return;
         UI.handleImageUpload(file);
     },
-
-    saveLLMConfig() {
-        const endpoint = document.getElementById('llmEndpoint')?.value.trim();
-        const apiKey = document.getElementById('llmApiKey')?.value.trim();
-        const model = document.getElementById('llmModel')?.value.trim();
-
-        if (!endpoint || !apiKey) {
-            UI.showToast('请填写API地址和密钥');
-            return;
-        }
-
-        const config = { endpoint, apiKey };
-        if (model) config.model = model;
-
-        const success = LLMService.saveConfig(config);
-        if (success) {
-            UI.showToast('LLM配置已保存 ✅');
-        } else {
-            UI.showToast('保存失败');
-        }
-    },
-
-    async testLLMConnection() {
-        if (!LLMService.isConfigured()) {
-            UI.showToast('请先配置LLM API');
-            return;
-        }
-
-        UI.showToast('正在测试连接...');
-        try {
-            const result = await LLMService.testConnection();
-            if (result.success) {
-                UI.showToast('连接成功 ✅');
-            } else {
-                UI.showToast('连接失败: ' + (result.error || '未知错误'));
-            }
-        } catch (error) {
-            UI.showToast('连接测试失败: ' + error.message);
-        }
-    }
 };
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -15,67 +15,32 @@ const DEFAULT_SYSTEM_PROMPT = `你是一个专业的药品信息提取助手。�
 - 如果无法识别任何信息，请在对应字段返回空字符串或空数组
 - 只返回JSON，不要包含其他文字`
 
-const STORAGE_KEY = 'llmConfig';
-
 const LLMService = {
-    config: {
-        endpoint: '',
-        apiKey: '',
-        model: 'gpt-4o',
-        systemPrompt: DEFAULT_SYSTEM_PROMPT
-    },
+    configured: false,
+    model: '',
 
-    init() {
+    async init() {
         try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                this.config = {
-                    ...this.config,
-                    ...parsed
-                };
-            }
+            const response = await fetch('/api/llm/config');
+            const config = await response.json();
+            this.configured = config.configured;
+            this.model = config.model;
         } catch (error) {
             console.error('LLMService init error:', error);
+            this.configured = false;
         }
-    },
-
-    saveConfig(config) {
-        try {
-            this.config = {
-                ...this.config,
-                ...config
-            };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(this.config));
-            return true;
-        } catch (error) {
-            console.error('LLMService saveConfig error:', error);
-            return false;
-        }
-    },
-
-    getConfig() {
-        return { ...this.config };
     },
 
     isConfigured() {
-        return !!(this.config.endpoint && this.config.apiKey);
+        return this.configured;
     },
 
     async callAPI(messages) {
         try {
-            const proxyUrl = window.location.origin === 'http://localhost:3000'
-                ? '/api/llm/chat'
-                : 'http://localhost:3000/api/llm/chat';
-            const response = await fetch(proxyUrl, {
+            const response = await fetch('/api/llm/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    endpoint: this.config.endpoint,
-                    apiKey: this.config.apiKey,
-                    model: this.config.model,
-                    messages: messages
-                })
+                body: JSON.stringify({ messages })
             });
 
             if (!response.ok) {
@@ -96,13 +61,13 @@ const LLMService = {
             }
         } catch (error) {
             console.error('LLMService callAPI error:', error);
-            return { error: '无法连接到代理服务，请确认服务端已启动（npm start）' };
+            return { error: '无法连接到服务端，请确认 npm start 已启动' };
         }
     },
 
     async parseText(text) {
         const messages = [
-            { role: 'system', content: this.config.systemPrompt },
+            { role: 'system', content: DEFAULT_SYSTEM_PROMPT },
             { role: 'user', content: text }
         ];
 
@@ -123,7 +88,7 @@ const LLMService = {
 
     async parseImage(base64DataUrl) {
         const messages = [
-            { role: 'system', content: this.config.systemPrompt },
+            { role: 'system', content: DEFAULT_SYSTEM_PROMPT },
             {
                 role: 'user',
                 content: [
@@ -149,17 +114,13 @@ const LLMService = {
     },
 
     async testConnection() {
-        const messages = [
-            { role: 'system', content: '你是一个助手。' },
-            { role: 'user', content: '回复"连接成功"四个字。' }
-        ];
-
-        const result = await this.callAPI(messages);
-        if (result.error) {
-            return { error: result.error };
+        try {
+            const response = await fetch('/api/llm/test', { method: 'POST' });
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            return { success: false, error: '连接测试失败: ' + error.message };
         }
-
-        return { success: true };
     }
 };
 
