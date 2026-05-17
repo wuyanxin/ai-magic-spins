@@ -1,0 +1,2730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4CAF50">
+    <title>用药提醒 - 您的健康小助手</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #388E3C;
+            --primary-light: #C8E6C9;
+            --accent-color: #FF9800;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --border-color: #e0e0e0;
+            --success-color: #4CAF50;
+            --warning-color: #FF9800;
+            --danger-color: #f44336;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+            --border-radius: 12px;
+            --transition-speed: 0.3s;
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* App Container */
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: var(--background-color);
+            position: relative;
+            padding-bottom: 70px;
+        }
+
+        /* Header Styles */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .app-header .date-display {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* View Container */
+        .view {
+            display: none;
+            padding: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section Styles */
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-speed);
+            border: 1px solid var(--border-color);
+        }
+
+        .card:active {
+            transform: scale(0.98);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .card-content {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Medication Card Specific */
+        .medication-card {
+            position: relative;
+        }
+
+        .medication-card .time-badge {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .medication-card .method-badge {
+            background-color: #E3F2FD;
+            color: #1976D2;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-left: 8px;
+        }
+
+        .medication-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+
+        .info-value {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            min-height: 48px;
+            min-width: 48px;
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            min-height: 40px;
+        }
+
+        .btn-icon {
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            border-radius: 50%;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            box-shadow: var(--shadow-lg);
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 100;
+            transition: all var(--transition-speed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fab:active {
+            transform: scale(0.9);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--card-background);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all var(--transition-speed);
+            border: none;
+            background: none;
+            cursor: pointer;
+            min-width: 80px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item .nav-icon {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+
+        .nav-item .nav-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .nav-item:active {
+            transform: scale(0.9);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background-color: var(--card-background);
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color var(--transition-speed);
+        }
+
+        .modal-close:hover {
+            background-color: var(--background-color);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            transition: all var(--transition-speed);
+            background-color: var(--card-background);
+            min-height: 48px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #aaa;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23757575' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        .form-hint {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        /* Time Picker */
+        .time-picker-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .time-chip {
+            padding: 10px 16px;
+            background-color: var(--background-color);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .time-chip.selected {
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+            color: var(--primary-dark);
+        }
+
+        .time-chip .remove-time {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Checkbox Group */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .checkbox-item {
+            padding: 10px 16px;
+            background-color: var(--background-color);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            font-size: 0.9rem;
+        }
+
+        .checkbox-item.selected {
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+            color: var(--primary-dark);
+        }
+
+        /* Action Buttons in Cards */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+        }
+
+        /* Reminder Card */
+        .reminder-card {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .reminder-card.completed {
+            border-left-color: var(--success-color);
+            opacity: 0.7;
+        }
+
+        .reminder-card.skipped {
+            border-left-color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .reminder-time {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .reminder-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #FFF3E0;
+            color: var(--warning-color);
+        }
+
+        .status-completed {
+            background-color: #E8F5E9;
+            color: var(--success-color);
+        }
+
+        .status-skipped {
+            background-color: #ECEFF1;
+            color: var(--text-secondary);
+        }
+
+        /* History List */
+        .history-date {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 20px 0 12px 0;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .history-date::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+
+        .log-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            margin-bottom: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .log-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .log-icon.completed {
+            background-color: #E8F5E9;
+            color: var(--success-color);
+        }
+
+        .log-icon.skipped {
+            background-color: #ECEFF1;
+            color: var(--text-secondary);
+        }
+
+        .log-icon.missed {
+            background-color: #FFEBEE;
+            color: var(--danger-color);
+        }
+
+        .log-details {
+            flex: 1;
+        }
+
+        .log-medication {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .log-time {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Settings Page */
+        .settings-group {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .settings-item {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color var(--transition-speed);
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-item:active {
+            background-color: var(--background-color);
+        }
+
+        .settings-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .settings-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .settings-text {
+            font-weight: 500;
+        }
+
+        .settings-arrow {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            width: 52px;
+            height: 32px;
+            background-color: #ccc;
+            border-radius: 16px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color var(--transition-speed);
+        }
+
+        .toggle-switch.active {
+            background-color: var(--primary-color);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background-color: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform var(--transition-speed);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .empty-text {
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background-color: var(--card-background);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: #333;
+            color: white;
+            padding: 14px 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .gap-10 {
+            gap: 10px;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .bottom-nav,
+            .fab,
+            .modal-overlay {
+                display: none !important;
+            }
+            
+            .app-container {
+                padding-bottom: 0;
+            }
+        }
+
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-primary: #ffffff;
+                --text-secondary: #b0b0b0;
+                --border-color: #333;
+            }
+        }
+
+        .form-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-tab {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background-color: var(--card-background);
+            color: var(--text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .form-tab.active {
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+            color: var(--primary-dark);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .smart-parse-section {
+            padding: 16px;
+            background-color: var(--background-color);
+            border-radius: var(--border-radius);
+            border: 2px dashed var(--border-color);
+        }
+
+        .parse-result {
+            margin-top: 16px;
+            padding: 16px;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            border: 2px solid var(--primary-color);
+        }
+
+        .parse-result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .parse-result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .parse-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .parse-result-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .parse-result-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .parse-result-value.highlight {
+            color: var(--primary-color);
+            background-color: var(--primary-light);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .notification-settings-section {
+            margin-top: 16px;
+        }
+
+        .notification-status {
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notification-status.granted {
+            background-color: #E8F5E9;
+            color: var(--success-color);
+        }
+
+        .notification-status.denied {
+            background-color: #FFEBEE;
+            color: var(--danger-color);
+        }
+
+        .notification-status.unsupported {
+            background-color: #FFF3E0;
+            color: var(--warning-color);
+        }
+
+        .notification-status.pending {
+            background-color: #E3F2FD;
+            color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>💊 用药提醒</h1>
+            <div class="date-display" id="currentDate"></div>
+        </header>
+
+        <!-- Home View -->
+        <div class="view active" id="homeView">
+            <!-- Today's Summary -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalMedications">0</div>
+                    <div class="stat-label">药品数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="todayCompleted">0</div>
+                    <div class="stat-label">今日已服</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="todayPending">0</div>
+                    <div class="stat-label">待服用</div>
+                </div>
+            </div>
+
+            <!-- Today's Reminders -->
+            <section class="section">
+                <h2 class="section-title">今日提醒</h2>
+                <div id="todayReminders">
+                    <!-- Reminders will be rendered here -->
+                </div>
+            </section>
+
+            <!-- Medication List -->
+            <section class="section">
+                <h2 class="section-title">我的药品</h2>
+                <div id="medicationList">
+                    <!-- Medications will be rendered here -->
+                </div>
+            </section>
+        </div>
+
+        <!-- Records View -->
+        <div class="view" id="recordsView">
+            <section class="section">
+                <h2 class="section-title">服药记录</h2>
+                <div id="historyList">
+                    <!-- History will be rendered here -->
+                </div>
+            </section>
+        </div>
+
+        <!-- Settings View -->
+        <div class="view" id="settingsView">
+            <section class="section">
+                <h2 class="section-title">设置</h2>
+                
+                <div class="settings-group">
+                    <div class="settings-item" id="notificationSettings">
+                        <div class="settings-label">
+                            <div class="settings-icon" style="background-color: #E8F5E9;">🔔</div>
+                            <div class="settings-text">浏览器通知提醒</div>
+                        </div>
+                        <div class="toggle-switch" id="notificationToggle"></div>
+                    </div>
+                    <div id="notificationStatusContainer" class="notification-settings-section">
+                        <div class="notification-status" id="notificationStatus">
+                            <span id="notificationStatusIcon"></span>
+                            <span id="notificationStatusText"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <div class="settings-item" id="exportData">
+                        <div class="settings-label">
+                            <div class="settings-icon" style="background-color: #E3F2FD;">📤</div>
+                            <div class="settings-text">导出数据</div>
+                        </div>
+                        <div class="settings-arrow">›</div>
+                    </div>
+                    
+                    <div class="settings-item" id="importData">
+                        <div class="settings-label">
+                            <div class="settings-icon" style="background-color: #FFF3E0;">📥</div>
+                            <div class="settings-text">导入数据</div>
+                        </div>
+                        <div class="settings-arrow">›</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">统计</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="weekCompliance">0%</div>
+                        <div class="stat-label">本周遵医率</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="monthLogs">0</div>
+                        <div class="stat-label">本月记录</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalLogs">0</div>
+                        <div class="stat-label">总记录数</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">关于</h2>
+                <div class="settings-group">
+                    <div class="settings-item">
+                        <div class="settings-label">
+                            <div class="settings-icon" style="background-color: #F3E5F5;">ℹ️</div>
+                            <div class="settings-text">版本</div>
+                        </div>
+                        <div style="color: var(--text-secondary);">1.0.0</div>
+                    </div>
+                    <div class="settings-item" id="clearData">
+                        <div class="settings-label">
+                            <div class="settings-icon" style="background-color: #FFEBEE; color: var(--danger-color);">🗑️</div>
+                            <div class="settings-text" style="color: var(--danger-color);">清除所有数据</div>
+                        </div>
+                        <div class="settings-arrow">›</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-view="home">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">首页</span>
+            </button>
+            <button class="nav-item" data-view="records">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">记录</span>
+            </button>
+            <button class="nav-item" data-view="settings">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">我的</span>
+            </button>
+        </nav>
+
+        <!-- Floating Action Button -->
+        <button class="fab" id="addMedicationBtn">+</button>
+    </div>
+
+    <!-- Add/Edit Medication Modal -->
+    <div class="modal-overlay" id="medicationModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">添加药品</h2>
+                <button class="modal-close" id="closeModal">×</button>
+            </div>
+            
+            <form id="medicationForm">
+                <input type="hidden" id="medicationId">
+                
+                <div class="form-tabs">
+                    <button type="button" class="form-tab active" data-tab="manual">📝 手动输入</button>
+                    <button type="button" class="form-tab" data-tab="smart">🤖 智能解析</button>
+                </div>
+                
+                <div class="tab-content active" id="manualTab">
+                    <div class="form-group">
+                        <label class="form-label" for="medicationName">药品名称 *</label>
+                        <input type="text" class="form-input" id="medicationName" placeholder="例如：阿司匹林" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="medicationDosage">剂量</label>
+                        <input type="text" class="form-input" id="medicationDosage" placeholder="例如：100mg">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="medicationFrequency">服用频率</label>
+                        <select class="form-input form-select" id="medicationFrequency">
+                            <option value="daily">每天</option>
+                            <option value="twice_daily">每天两次</option>
+                            <option value="three_times">每天三次</option>
+                            <option value="weekly">每周</option>
+                            <option value="as_needed">按需服用</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">服用时间</label>
+                        <div class="time-picker-container" id="timePicker">
+                            <button type="button" class="time-chip" data-time="08:00">08:00</button>
+                            <button type="button" class="time-chip" data-time="12:00">12:00</button>
+                            <button type="button" class="time-chip" data-time="18:00">18:00</button>
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-sm mt-20" id="addTimeBtn">+ 添加时间</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="medicationMethod">服用方式</label>
+                        <select class="form-input form-select" id="medicationMethod">
+                            <option value="口服">口服</option>
+                            <option value="饭后服用">饭后服用</option>
+                            <option value="饭前服用">饭前服用</option>
+                            <option value="空腹服用">空腹服用</option>
+                            <option value="随餐服用">随餐服用</option>
+                            <option value="外用">外用</option>
+                            <option value="含服">含服</option>
+                            <option value="注射">注射</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="medicationDays">服用日期</label>
+                        <div class="checkbox-group" id="daysPicker">
+                            <div class="checkbox-item selected" data-day="1">周一</div>
+                            <div class="checkbox-item selected" data-day="2">周二</div>
+                            <div class="checkbox-item selected" data-day="3">周三</div>
+                            <div class="checkbox-item selected" data-day="4">周四</div>
+                            <div class="checkbox-item selected" data-day="5">周五</div>
+                            <div class="checkbox-item selected" data-day="6">周六</div>
+                            <div class="checkbox-item selected" data-day="0">周日</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="medicationNotes">备注</label>
+                        <textarea class="form-input form-textarea" id="medicationNotes" placeholder="添加备注信息..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="smartTab">
+                    <div class="smart-parse-section">
+                        <p class="form-hint" style="margin-bottom: 12px;">输入药品说明、医嘱或口头描述，系统将自动解析并填充表单</p>
+                        <div class="form-group">
+                            <label class="form-label" for="medicationDescription">药品描述</label>
+                            <textarea class="form-input form-textarea" id="medicationDescription" placeholder="例如：&#10;阿司匹林 100mg&#10;每日3次，每次1片&#10;饭后服用&#10;08:00 12:00 18:00"></textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-block" id="parseDescriptionBtn">
+                            🤖 智能解析
+                        </button>
+                        
+                        <div class="parse-result" id="parseResult" style="display: none;">
+                            <div class="parse-result-header">
+                                <span>✨ 解析结果</span>
+                                <button type="button" class="btn btn-sm btn-secondary" id="applyParseBtn">应用此结果</button>
+                            </div>
+                            <div class="parse-result-content" id="parseResultContent"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">取消</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="confirmTitle">确认操作</h2>
+                <button class="modal-close" id="closeConfirmModal">×</button>
+            </div>
+            <p id="confirmMessage" style="margin-bottom: 20px; color: var(--text-secondary);"></p>
+            <div class="action-buttons">
+                <button type="button" class="btn btn-secondary" id="confirmCancel">取消</button>
+                <button type="button" class="btn btn-danger" id="confirmOk">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="fileInput" accept=".json" style="display: none;">
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ==========================================
+        // Data Storage Layer
+        // ==========================================
+        const Storage = {
+            KEYS: {
+                MEDICATIONS: 'medications',
+                LOGS: 'medicationLogs',
+                SETTINGS: 'appSettings'
+            },
+
+            get(key) {
+                try {
+                    const data = localStorage.getItem(key);
+                    return data ? JSON.parse(data) : null;
+                } catch (error) {
+                    console.error('Storage get error:', error);
+                    return null;
+                }
+            },
+
+            set(key, value) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(value));
+                    return true;
+                } catch (error) {
+                    console.error('Storage set error:', error);
+                    return false;
+                }
+            },
+
+            remove(key) {
+                try {
+                    localStorage.removeItem(key);
+                    return true;
+                } catch (error) {
+                    console.error('Storage remove error:', error);
+                    return false;
+                }
+            },
+
+            // Specific data operations
+            getMedications() {
+                return this.get(this.KEYS.MEDICATIONS) || [];
+            },
+
+            saveMedications(medications) {
+                return this.set(this.KEYS.MEDICATIONS, medications);
+            },
+
+            getLogs() {
+                return this.get(this.KEYS.LOGS) || [];
+            },
+
+            saveLogs(logs) {
+                return this.set(this.KEYS.LOGS, logs);
+            },
+
+            getSettings() {
+                return this.get(this.KEYS.SETTINGS) || {
+                    notificationsEnabled: true
+                };
+            },
+
+            saveSettings(settings) {
+                return this.set(this.KEYS.SETTINGS, settings);
+            }
+        };
+
+        // ==========================================
+        // Medication Description Parser
+        // ==========================================
+        const MedicationParser = {
+            parseMedicationDescription(text) {
+                if (!text || !text.trim()) {
+                    return { error: '请输入药品描述' };
+                }
+
+                const result = {
+                    name: '',
+                    dosage: '',
+                    frequency: '',
+                    times: [],
+                    method: ''
+                };
+
+                const lines = text.trim().split('\n').map(line => line.trim()).filter(line => line);
+                if (lines.length === 0) {
+                    return { error: '请输入有效的药品描述' };
+                }
+
+                const fullText = text.replace(/\n/g, ' ');
+
+                const namePatterns = [
+                    /(?:药品名[：:]\s*)(.+?)(?:\s+\d|[\u4e00-\u9fa5]{2,3}[,，]|$)/i,
+                    /^([^\d\s][^\d,，]+?)(?:\s+\d|[\u4e00-\u9fa5]{2,3}[,，]|$)/,
+                    /([\u4e00-\u9fa5a-zA-Z]+(?:片|粒|胶囊|丸|ml|mg))/i,
+                    /(?:名称[：:]\s*)(.+?)(?:\s|$)/i
+                ];
+                for (const pattern of namePatterns) {
+                    const match = fullText.match(pattern);
+                    if (match && match[1]) {
+                        result.name = match[1].trim().replace(/[，,]$/, '');
+                        break;
+                    }
+                }
+                if (!result.name && lines[0]) {
+                    const firstLine = lines[0].trim();
+                    const dosageMatch = firstLine.match(/^([\u4e00-\u9fa5a-zA-Z]+)/);
+                    if (dosageMatch) {
+                        result.name = dosageMatch[1];
+                    }
+                }
+
+                const dosagePatterns = [
+                    /(\d+(?:\.\d+)?\s*(?:mg|ml|ug|g|毫克|毫升|微克|克))/gi,
+                    /(\d+(?:\.\d+)?\s*(?:片|粒|丸|颗|支|袋|包|单位))/gi,
+                    /(?:每次|每次服用)\s*(\d+(?:\.\d+)?(?:片|粒|丸|颗|支|袋|包|ml|mg|ug|克|毫升|毫克))/gi,
+                    /(?:剂量[：:]\s*)(.+?)(?:\s+[\u4e00-\u9fa5]|,|$)/i
+                ];
+                for (const pattern of dosagePatterns) {
+                    const match = fullText.match(pattern);
+                    if (match && match[0]) {
+                        const dosageText = match[0].replace(/(?:每次|每次服用|剂量[：:]\s*)/gi, '');
+                        result.dosage = dosageText;
+                        break;
+                    }
+                }
+                if (!result.dosage) {
+                    const dosageInLine = lines.find(line => /\d+\s*(?:mg|ml|片|粒|丸|颗)/i.test(line));
+                    if (dosageInLine) {
+                        const dosageMatch = dosageInLine.match(/(\d+(?:\.\d+)?\s*(?:mg|ml|ug|g|片|粒|丸|颗|支|袋|包|单位|毫升|毫克|微克|克))/i);
+                        if (dosageMatch) {
+                            result.dosage = dosageMatch[1];
+                        }
+                    }
+                }
+
+                const frequencyPatterns = [
+                    [/(?:每日|每天)\s*[0-9零一二两三四五六七八九十百]+(?:次|顿)/gi, (match) => {
+                        const count = match[0].match(/[0-9零一二两三四五六七八九十]+/)[0];
+                        const cnNum = { '零': 0, '一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10 };
+                        const num = parseInt(count) || cnNum[count] || 0;
+                        if (num === 1) return 'daily';
+                        if (num === 2) return 'twice_daily';
+                        if (num === 3) return 'three_times';
+                        return 'daily';
+                    }],
+                    [/(?:每[0-9]+小时|每[零一二三四五六七八九十]+小时)\s*[0-9]+(?:次|片|粒)/gi, () => 'daily'],
+                    [/(?:每周|一周)\s*[0-9零一二三四五六七八九十]+(?:次|顿)/gi, () => 'weekly'],
+                    [/(?:按需|必要时|需要时)/gi, () => 'as_needed'],
+                    [/(?:每日|每天)/gi, () => 'daily'],
+                    [/(?:每日[0-9零一二两三四五六七八九十]+次)/gi, (match) => {
+                        const num = parseInt(match[0].match(/\d+/)[0]) || 0;
+                        if (num === 1) return 'daily';
+                        if (num === 2) return 'twice_daily';
+                        if (num === 3) return 'three_times';
+                        return 'daily';
+                    }]
+                ];
+                for (const [pattern, handler] of frequencyPatterns) {
+                    const match = fullText.match(pattern);
+                    if (match) {
+                        result.frequency = handler(match);
+                        break;
+                    }
+                }
+
+                const timePatterns = [
+                    /(\d{1,2}:\d{2})/g,
+                    /(\d{1,2}[时点]\d{0,2}分?)/g,
+                    /(\d{1,2}\s*[时点]\s*\d{0,2})/g
+                ];
+                for (const pattern of timePatterns) {
+                    const matches = fullText.match(pattern);
+                    if (matches) {
+                        for (const time of matches) {
+                            const normalizedTime = time.replace(/[时点分\s]/g, '');
+                            const timeMatch = normalizedTime.match(/^(\d{1,2}):?(\d{2})$/);
+                            if (timeMatch) {
+                                const hours = parseInt(timeMatch[1]);
+                                const minutes = timeMatch[2] || '00';
+                                if (hours >= 0 && hours <= 23) {
+                                    const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+                                    if (!result.times.includes(formattedTime)) {
+                                        result.times.push(formattedTime);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (result.times.length > 0) break;
+                }
+                if (result.times.length === 0) {
+                    const timeNumbers = fullText.match(/\d{1,2}(?::\d{2})?/g);
+                    if (timeNumbers) {
+                        for (const t of timeNumbers) {
+                            const timeMatch = t.match(/^(\d{1,2}):(\d{2})$/);
+                            if (timeMatch) {
+                                const hours = parseInt(timeMatch[1]);
+                                if (hours >= 6 && hours <= 22) {
+                                    const formattedTime = `${hours.toString().padStart(2, '0')}:${timeMatch[2]}`;
+                                    if (!result.times.includes(formattedTime)) {
+                                        result.times.push(formattedTime);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                result.times.sort();
+
+                const methodPatterns = [
+                    /(?:服用方式|用法)[：:]\s*([^\s,，]+)/i,
+                    /(?:餐后|饭后|餐后|随餐|空腹|饭前|睡前|晨起|外用|含服|吞服|嚼服|注射|口服)/gi
+                ];
+                for (const pattern of methodPatterns) {
+                    const match = fullText.match(pattern);
+                    if (match) {
+                        const methodText = match[0].replace(/(?:服用方式|用法)[：:]\s*/, '');
+                        const methodMap = {
+                            '饭后': '饭后服用',
+                            '餐后': '饭后服用',
+                            '饭前': '饭前服用',
+                            '空腹': '空腹服用',
+                            '随餐': '随餐服用',
+                            '睡前': '睡前服用',
+                            '晨起': '晨起服用',
+                            '口服': '口服',
+                            '外用': '外用',
+                            '含服': '含服',
+                            '吞服': '口服',
+                            '嚼服': '口服',
+                            '注射': '注射'
+                        };
+                        result.method = methodMap[methodText] || methodText;
+                        break;
+                    }
+                }
+
+                return result;
+            },
+
+            displayParseResult(result) {
+                const parseResultEl = document.getElementById('parseResult');
+                const parseResultContent = document.getElementById('parseResultContent');
+
+                if (result.error) {
+                    parseResultEl.style.display = 'block';
+                    parseResultContent.innerHTML = `<div style="color: var(--danger-color); padding: 12px; text-align: center;">${result.error}</div>`;
+                    return;
+                }
+
+                const frequencyMap = {
+                    'daily': '每天',
+                    'twice_daily': '每天两次',
+                    'three_times': '每天三次',
+                    'weekly': '每周',
+                    'as_needed': '按需服用'
+                };
+
+                parseResultContent.innerHTML = `
+                    <div class="parse-result-item">
+                        <span class="parse-result-label">药品名称</span>
+                        <span class="parse-result-value ${result.name ? 'highlight' : ''}">${result.name || '未识别'}</span>
+                    </div>
+                    <div class="parse-result-item">
+                        <span class="parse-result-label">剂量</span>
+                        <span class="parse-result-value ${result.dosage ? 'highlight' : ''}">${result.dosage || '未识别'}</span>
+                    </div>
+                    <div class="parse-result-item">
+                        <span class="parse-result-label">服用频率</span>
+                        <span class="parse-result-value ${result.frequency ? 'highlight' : ''}">${result.frequency ? frequencyMap[result.frequency] || result.frequency : '未识别'}</span>
+                    </div>
+                    <div class="parse-result-item">
+                        <span class="parse-result-label">服用时间</span>
+                        <span class="parse-result-value ${result.times.length > 0 ? 'highlight' : ''}">${result.times.length > 0 ? result.times.join(', ') : '未识别'}</span>
+                    </div>
+                    <div class="parse-result-item">
+                        <span class="parse-result-label">服用方式</span>
+                        <span class="parse-result-value ${result.method ? 'highlight' : ''}">${result.method || '未识别'}</span>
+                    </div>
+                `;
+
+                parseResultEl.style.display = 'block';
+            },
+
+            applyParsedResult(result) {
+                if (result.name) {
+                    document.getElementById('medicationName').value = result.name;
+                }
+                if (result.dosage) {
+                    document.getElementById('medicationDosage').value = result.dosage;
+                }
+                if (result.frequency) {
+                    document.getElementById('medicationFrequency').value = result.frequency;
+                }
+                if (result.method) {
+                    document.getElementById('medicationMethod').value = result.method;
+                }
+                if (result.times.length > 0) {
+                    AppState.selectedTimes = result.times;
+                    UI.renderTimePicker();
+                }
+
+                const tabs = document.querySelectorAll('.form-tab');
+                const manualTab = document.querySelector('[data-tab="manual"]');
+                const smartTab = document.querySelector('[data-tab="smart"]');
+                const manualContent = document.getElementById('manualTab');
+                const smartContent = document.getElementById('smartTab');
+
+                tabs.forEach(tab => tab.classList.remove('active'));
+                manualTab.classList.add('active');
+                manualContent.classList.add('active');
+                smartContent.classList.remove('active');
+
+                UI.showToast('已应用解析结果 ✨');
+            }
+        };
+
+        // ==========================================
+        // Notification Manager
+        // ==========================================
+        const NotificationManager = {
+            checkInterval: null,
+            lastCheckedMinute: -1,
+
+            isSupported() {
+                return 'Notification' in window;
+            },
+
+            async requestPermission() {
+                if (!this.isSupported()) {
+                    console.warn('当前浏览器不支持通知功能');
+                    return 'unsupported';
+                }
+
+                if (Notification.permission === 'granted') {
+                    return 'granted';
+                }
+
+                if (Notification.permission === 'denied') {
+                    return 'denied';
+                }
+
+                try {
+                    const permission = await Notification.requestPermission();
+                    return permission;
+                } catch (error) {
+                    console.error('请求通知权限失败:', error);
+                    return 'denied';
+                }
+            },
+
+            showNotification(title, body, icon = '💊') {
+                if (!this.isSupported() || Notification.permission !== 'granted') {
+                    UI.showToast(`${title}: ${body}`);
+                    return false;
+                }
+
+                try {
+                    const notification = new Notification(title, {
+                        body: body,
+                        icon: icon,
+                        tag: 'medication-reminder',
+                        requireInteraction: false,
+                        silent: false
+                    });
+
+                    notification.onclick = () => {
+                        window.focus();
+                        notification.close();
+                    };
+
+                    setTimeout(() => notification.close(), 10000);
+                    return true;
+                } catch (error) {
+                    console.error('显示通知失败:', error);
+                    UI.showToast(`${title}: ${body}`);
+                    return false;
+                }
+            },
+
+            startReminderCheck() {
+                if (this.checkInterval) {
+                    clearInterval(this.checkInterval);
+                }
+
+                this.checkReminders();
+
+                this.checkInterval = setInterval(() => {
+                    this.checkReminders();
+                }, 60000);
+            },
+
+            stopReminderCheck() {
+                if (this.checkInterval) {
+                    clearInterval(this.checkInterval);
+                    this.checkInterval = null;
+                }
+            },
+
+            checkReminders() {
+                if (!AppState.settings.notificationsEnabled) {
+                    return;
+                }
+
+                const now = new Date();
+                const currentMinute = now.getHours() * 60 + now.getMinutes();
+
+                if (currentMinute === this.lastCheckedMinute) {
+                    return;
+                }
+
+                this.lastCheckedMinute = currentMinute;
+
+                const today = new Date();
+                const dayOfWeek = today.getDay();
+                const todayStr = today.toISOString().split('T')[0];
+                const currentTime = now.toTimeString().slice(0, 5);
+
+                AppState.medications.forEach(med => {
+                    if (!med.days.includes(dayOfWeek)) {
+                        return;
+                    }
+
+                    med.times.forEach(time => {
+                        if (time !== currentTime) {
+                            return;
+                        }
+
+                        const existingLog = AppState.logs.find(
+                            l => l.medicationId === med.id &&
+                            l.scheduledTime === time &&
+                            l.createdAt.startsWith(todayStr)
+                        );
+
+                        if (existingLog && existingLog.status !== 'pending') {
+                            return;
+                        }
+
+                        const title = `💊 用药提醒 - ${med.name}`;
+                        const body = `该服用 ${med.dosage || ''} ${med.method}`.trim();
+
+                        this.showNotification(title, body);
+                    });
+                });
+            },
+
+            getPermissionStatus() {
+                if (!this.isSupported()) {
+                    return 'unsupported';
+                }
+                return Notification.permission;
+            }
+        };
+
+        // ==========================================
+        // Data Models
+        // ==========================================
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function createMedication(data) {
+            return {
+                id: data.id || generateId(),
+                name: data.name,
+                dosage: data.dosage || '',
+                frequency: data.frequency || 'daily',
+                times: data.times || ['08:00'],
+                method: data.method || '口服',
+                days: data.days || [1, 2, 3, 4, 5],
+                notes: data.notes || '',
+                createdAt: data.createdAt || new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+        }
+
+        function createLog(data) {
+            return {
+                id: data.id || generateId(),
+                medicationId: data.medicationId,
+                medicationName: data.medicationName,
+                scheduledTime: data.scheduledTime,
+                actualTime: data.actualTime || null,
+                status: data.status || 'pending',
+                notes: data.notes || '',
+                createdAt: data.createdAt || new Date().toISOString()
+            };
+        }
+
+        // ==========================================
+        // State Management
+        // ==========================================
+        const AppState = {
+            currentView: 'home',
+            medications: [],
+            logs: [],
+            settings: {},
+            selectedTimes: ['08:00', '12:00', '18:00'],
+            selectedDays: [1, 2, 3, 4, 5],
+
+            init() {
+                this.medications = Storage.getMedications();
+                this.logs = Storage.getLogs();
+                this.settings = Storage.getSettings();
+            },
+
+            addMedication(medication) {
+                this.medications.push(medication);
+                Storage.saveMedications(this.medications);
+                this.generateTodayReminders(medication);
+            },
+
+            updateMedication(id, data) {
+                const index = this.medications.findIndex(m => m.id === id);
+                if (index !== -1) {
+                    this.medications[index] = {
+                        ...this.medications[index],
+                        ...data,
+                        updatedAt: new Date().toISOString()
+                    };
+                    Storage.saveMedications(this.medications);
+                }
+            },
+
+            deleteMedication(id) {
+                this.medications = this.medications.filter(m => m.id !== id);
+                Storage.saveMedications(this.medications);
+            },
+
+            addLog(log) {
+                this.logs.unshift(log);
+                Storage.saveLogs(this.logs);
+            },
+
+            updateLog(id, data) {
+                const index = this.logs.findIndex(l => l.id === id);
+                if (index !== -1) {
+                    this.logs[index] = { ...this.logs[index], ...data };
+                    Storage.saveLogs(this.logs);
+                }
+            },
+
+            getTodayReminders() {
+                const today = new Date();
+                const dayOfWeek = today.getDay();
+                const todayStr = today.toISOString().split('T')[0];
+                
+                const reminders = [];
+                
+                this.medications.forEach(med => {
+                    if (med.days.includes(dayOfWeek)) {
+                        med.times.forEach(time => {
+                            const existingLog = this.logs.find(
+                                l => l.medicationId === med.id && 
+                                l.scheduledTime === time &&
+                                l.createdAt.startsWith(todayStr)
+                            );
+                            
+                            reminders.push({
+                                id: existingLog ? existingLog.id : `${med.id}-${time}`,
+                                medicationId: med.id,
+                                medicationName: med.name,
+                                dosage: med.dosage,
+                                method: med.method,
+                                scheduledTime: time,
+                                status: existingLog ? existingLog.status : 'pending',
+                                logId: existingLog ? existingLog.id : null
+                            });
+                        });
+                    }
+                });
+
+                return reminders.sort((a, b) => a.scheduledTime.localeCompare(b.scheduledTime));
+            },
+
+            generateTodayReminders(medication) {
+                const today = new Date();
+                const dayOfWeek = today.getDay();
+                
+                if (medication.days.includes(dayOfWeek)) {
+                    medication.times.forEach(time => {
+                        const todayStr = today.toISOString().split('T')[0];
+                        const existingLog = this.logs.find(
+                            l => l.medicationId === medication.id && 
+                            l.scheduledTime === time &&
+                            l.createdAt.startsWith(todayStr)
+                        );
+                        
+                        if (!existingLog) {
+                            const log = createLog({
+                                medicationId: medication.id,
+                                medicationName: medication.name,
+                                scheduledTime: time,
+                                status: 'pending'
+                            });
+                            this.addLog(log);
+                        }
+                    });
+                }
+            },
+
+            getHistoryByDate() {
+                const grouped = {};
+                
+                this.logs.forEach(log => {
+                    const date = log.createdAt.split('T')[0];
+                    if (!grouped[date]) {
+                        grouped[date] = [];
+                    }
+                    grouped[date].push(log);
+                });
+
+                return Object.entries(grouped)
+                    .sort((a, b) => b[0].localeCompare(a[0]))
+                    .map(([date, logs]) => ({
+                        date,
+                        logs: logs.sort((a, b) => a.scheduledTime.localeCompare(b.scheduledTime))
+                    }));
+            },
+
+            getStatistics() {
+                const now = new Date();
+                const todayStr = now.toISOString().split('T')[0];
+                const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                const monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+                const todayLogs = this.logs.filter(l => l.createdAt.startsWith(todayStr));
+                const weekLogs = this.logs.filter(l => l.createdAt.split('T')[0] >= weekAgo);
+                const monthLogs = this.logs.filter(l => l.createdAt.split('T')[0] >= monthAgo);
+
+                const weekCompleted = weekLogs.filter(l => l.status === 'completed').length;
+                const weekTotal = weekLogs.length;
+                const weekCompliance = weekTotal > 0 ? Math.round((weekCompleted / weekTotal) * 100) : 0;
+
+                return {
+                    totalMedications: this.medications.length,
+                    todayCompleted: todayLogs.filter(l => l.status === 'completed').length,
+                    todayPending: todayLogs.filter(l => l.status === 'pending').length,
+                    weekCompliance,
+                    monthLogs: monthLogs.length,
+                    totalLogs: this.logs.length
+                };
+            }
+        };
+
+        // ==========================================
+        // UI Rendering
+        // ==========================================
+        const UI = {
+            elements: {},
+
+            init() {
+                this.elements = {
+                    currentDate: document.getElementById('currentDate'),
+                    homeView: document.getElementById('homeView'),
+                    recordsView: document.getElementById('recordsView'),
+                    settingsView: document.getElementById('settingsView'),
+                    todayReminders: document.getElementById('todayReminders'),
+                    medicationList: document.getElementById('medicationList'),
+                    historyList: document.getElementById('historyList'),
+                    medicationModal: document.getElementById('medicationModal'),
+                    medicationForm: document.getElementById('medicationForm'),
+                    modalTitle: document.getElementById('modalTitle'),
+                    toast: document.getElementById('toast'),
+                    notificationToggle: document.getElementById('notificationToggle'),
+                    totalMedications: document.getElementById('totalMedications'),
+                    todayCompleted: document.getElementById('todayCompleted'),
+                    todayPending: document.getElementById('todayPending'),
+                    weekCompliance: document.getElementById('weekCompliance'),
+                    monthLogs: document.getElementById('monthLogs'),
+                    totalLogs: document.getElementById('totalLogs'),
+                    timePicker: document.getElementById('timePicker'),
+                    addTimeBtn: document.getElementById('addTimeBtn'),
+                    daysPicker: document.getElementById('daysPicker'),
+                    confirmModal: document.getElementById('confirmModal'),
+                    confirmTitle: document.getElementById('confirmTitle'),
+                    confirmMessage: document.getElementById('confirmMessage'),
+                    confirmOk: document.getElementById('confirmOk')
+                };
+            },
+
+            updateDate() {
+                const now = new Date();
+                const options = { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    weekday: 'long'
+                };
+                this.elements.currentDate.textContent = now.toLocaleDateString('zh-CN', options);
+            },
+
+            renderTodayReminders() {
+                const reminders = AppState.getTodayReminders();
+                
+                if (reminders.length === 0) {
+                    this.elements.todayReminders.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📭</div>
+                            <div class="empty-title">今日暂无提醒</div>
+                            <div class="empty-text">添加药品后，这里会显示您的用药提醒</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                this.elements.todayReminders.innerHTML = reminders.map(reminder => `
+                    <div class="card reminder-card ${reminder.status === 'completed' ? 'completed' : ''} ${reminder.status === 'skipped' ? 'skipped' : ''}">
+                        <div class="card-header">
+                            <div>
+                                <div class="reminder-time">${reminder.scheduledTime}</div>
+                                <div class="card-title">${reminder.medicationName}</div>
+                                ${reminder.dosage ? `<div class="card-subtitle">${reminder.dosage}</div>` : ''}
+                            </div>
+                            <span class="reminder-status status-${reminder.status}">
+                                ${reminder.status === 'pending' ? '⏳ 待服用' : ''}
+                                ${reminder.status === 'completed' ? '✅ 已服用' : ''}
+                                ${reminder.status === 'skipped' ? '⏭️ 已跳过' : ''}
+                            </span>
+                        </div>
+                        <div class="card-content">
+                            <span class="method-badge">${reminder.method}</span>
+                        </div>
+                        ${reminder.status === 'pending' ? `
+                            <div class="action-buttons">
+                                <button class="btn btn-success btn-sm" onclick="App.markAsTaken('${reminder.id}', '${reminder.medicationId}', '${reminder.scheduledTime}', '${reminder.medicationName}', '${reminder.dosage || ''}')">
+                                    ✅ 已服用
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="App.markAsSkipped('${reminder.id}', '${reminder.medicationId}', '${reminder.scheduledTime}', '${reminder.medicationName}', '${reminder.dosage || ''}')">
+                                    ⏭️ 跳过
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            },
+
+            renderMedications() {
+                const medications = AppState.medications;
+                
+                if (medications.length === 0) {
+                    this.elements.medicationList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">💊</div>
+                            <div class="empty-title">暂无药品</div>
+                            <div class="empty-text">点击下方 "+" 按钮添加您的第一个药品</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                this.elements.medicationList.innerHTML = medications.map(med => `
+                    <div class="card medication-card" data-id="${med.id}">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">${med.name}</div>
+                                ${med.dosage ? `<div class="card-subtitle">${med.dosage}</div>` : ''}
+                            </div>
+                            <div>
+                                <span class="time-badge">${this.formatFrequency(med.frequency)}</span>
+                                <span class="method-badge">${med.method}</span>
+                            </div>
+                        </div>
+                        <div class="medication-info">
+                            <div class="info-item">
+                                <span class="info-label">服用时间</span>
+                                <span class="info-value">${med.times.join(', ')}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">服用日期</span>
+                                <span class="info-value">${this.formatDays(med.days)}</span>
+                            </div>
+                        </div>
+                        ${med.notes ? `<div class="card-content">📝 ${med.notes}</div>` : ''}
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary btn-sm" onclick="App.editMedication('${med.id}')">
+                                ✏️ 编辑
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="App.deleteMedication('${med.id}')">
+                                🗑️ 删除
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            renderHistory() {
+                const history = AppState.getHistoryByDate();
+                
+                if (history.length === 0) {
+                    this.elements.historyList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📋</div>
+                            <div class="empty-title">暂无记录</div>
+                            <div class="empty-text">您的服药记录将显示在这里</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
+                this.elements.historyList.innerHTML = history.map(day => {
+                    const date = new Date(day.date);
+                    const dayName = dayNames[date.getDay()];
+                    const dateStr = date.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' });
+                    
+                    return `
+                        <div class="history-date">${dayName} ${dateStr}</div>
+                        ${day.logs.map(log => `
+                            <div class="log-item">
+                                <div class="log-icon ${log.status}">
+                                    ${log.status === 'completed' ? '✅' : ''}
+                                    ${log.status === 'skipped' ? '⏭️' : ''}
+                                    ${log.status === 'pending' ? '⏳' : ''}
+                                </div>
+                                <div class="log-details">
+                                    <div class="log-medication">${log.medicationName}</div>
+                                    <div class="log-time">计划 ${log.scheduledTime} · 
+                                        ${log.status === 'completed' ? `实际 ${log.actualTime || '未知'}` : ''}
+                                        ${log.status === 'skipped' ? '已跳过' : ''}
+                                        ${log.status === 'pending' ? '未服用' : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    `;
+                }).join('');
+            },
+
+            renderStatistics() {
+                const stats = AppState.getStatistics();
+                
+                this.elements.totalMedications.textContent = stats.totalMedications;
+                this.elements.todayCompleted.textContent = stats.todayCompleted;
+                this.elements.todayPending.textContent = stats.todayPending;
+                this.elements.weekCompliance.textContent = stats.weekCompliance + '%';
+                this.elements.monthLogs.textContent = stats.monthLogs;
+                this.elements.totalLogs.textContent = stats.totalLogs;
+
+                if (AppState.settings.notificationsEnabled) {
+                    this.elements.notificationToggle.classList.add('active');
+                } else {
+                    this.elements.notificationToggle.classList.remove('active');
+                }
+
+                this.renderNotificationStatus();
+            },
+
+            renderNotificationStatus() {
+                const statusContainer = document.getElementById('notificationStatusContainer');
+                const statusEl = document.getElementById('notificationStatus');
+                const statusIcon = document.getElementById('notificationStatusIcon');
+                const statusText = document.getElementById('notificationStatusText');
+
+                if (!NotificationManager.isSupported()) {
+                    statusContainer.style.display = 'block';
+                    statusEl.className = 'notification-status unsupported';
+                    statusIcon.textContent = '⚠️';
+                    statusText.textContent = '当前浏览器不支持通知功能';
+                } else if (Notification.permission === 'granted') {
+                    statusContainer.style.display = 'block';
+                    statusEl.className = 'notification-status granted';
+                    statusIcon.textContent = '✅';
+                    statusText.textContent = '通知权限已授权，提醒功能已就绪';
+                } else if (Notification.permission === 'denied') {
+                    statusContainer.style.display = 'block';
+                    statusEl.className = 'notification-status denied';
+                    statusIcon.textContent = '❌';
+                    statusText.textContent = '通知权限被拒绝，请在浏览器设置中开启';
+                } else {
+                    statusContainer.style.display = 'block';
+                    statusEl.className = 'notification-status pending';
+                    statusIcon.textContent = '⏳';
+                    statusText.textContent = '点击上方开关以开启通知提醒';
+                }
+            },
+
+            formatFrequency(frequency) {
+                const map = {
+                    'daily': '每天',
+                    'twice_daily': '每天两次',
+                    'three_times': '每天三次',
+                    'weekly': '每周',
+                    'as_needed': '按需'
+                };
+                return map[frequency] || frequency;
+            },
+
+            formatDays(days) {
+                if (days.length === 7) return '每天';
+                if (days.length === 5 && !days.includes(0) && !days.includes(6)) return '工作日';
+                if (days.length === 2 && days.includes(0) && days.includes(6)) return '周末';
+                
+                const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+                return days.map(d => dayNames[d]).join(', ');
+            },
+
+            showToast(message, duration = 2000) {
+                this.elements.toast.textContent = message;
+                this.elements.toast.classList.add('show');
+                
+                setTimeout(() => {
+                    this.elements.toast.classList.remove('show');
+                }, duration);
+            },
+
+            openModal(title = '添加药品', medicationId = null) {
+                this.elements.modalTitle.textContent = title;
+                this.elements.medicationForm.reset();
+                this.elements.medicationId.value = medicationId || '';
+                
+                AppState.selectedTimes = ['08:00', '12:00', '18:00'];
+                AppState.selectedDays = [1, 2, 3, 4, 5];
+                this.renderTimePicker();
+                this.renderDaysPicker();
+                
+                if (medicationId) {
+                    const med = AppState.medications.find(m => m.id === medicationId);
+                    if (med) {
+                        document.getElementById('medicationName').value = med.name;
+                        document.getElementById('medicationDosage').value = med.dosage;
+                        document.getElementById('medicationFrequency').value = med.frequency;
+                        document.getElementById('medicationMethod').value = med.method;
+                        document.getElementById('medicationNotes').value = med.notes;
+                        
+                        AppState.selectedTimes = [...med.times];
+                        AppState.selectedDays = [...med.days];
+                        this.renderTimePicker();
+                        this.renderDaysPicker();
+                    }
+                }
+                
+                this.elements.medicationModal.classList.add('active');
+            },
+
+            closeModal() {
+                this.elements.medicationModal.classList.remove('active');
+            },
+
+            renderTimePicker() {
+                this.elements.timePicker.innerHTML = AppState.selectedTimes.map(time => `
+                    <div class="time-chip selected" data-time="${time}">
+                        ${time}
+                        <button type="button" class="remove-time" onclick="UI.removeTime('${time}')">×</button>
+                    </div>
+                `).join('');
+            },
+
+            removeTime(time) {
+                AppState.selectedTimes = AppState.selectedTimes.filter(t => t !== time);
+                this.renderTimePicker();
+            },
+
+            addTime() {
+                const time = prompt('请输入时间 (格式: HH:MM)', '20:00');
+                if (time && /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(time)) {
+                    if (!AppState.selectedTimes.includes(time)) {
+                        AppState.selectedTimes.push(time);
+                        AppState.selectedTimes.sort();
+                        this.renderTimePicker();
+                    }
+                } else if (time) {
+                    this.showToast('请输入正确的时间格式');
+                }
+            },
+
+            renderDaysPicker() {
+                const items = this.elements.daysPicker.querySelectorAll('.checkbox-item');
+                items.forEach(item => {
+                    const day = parseInt(item.dataset.day);
+                    if (AppState.selectedDays.includes(day)) {
+                        item.classList.add('selected');
+                    } else {
+                        item.classList.remove('selected');
+                    }
+                });
+            },
+
+            showConfirm(title, message, onConfirm) {
+                this.elements.confirmTitle.textContent = title;
+                this.elements.confirmMessage.textContent = message;
+                this.elements.confirmModal.classList.add('active');
+                
+                this.elements.confirmOk.onclick = () => {
+                    onConfirm();
+                    this.elements.confirmModal.classList.remove('active');
+                };
+            },
+
+            closeConfirmModal() {
+                this.elements.confirmModal.classList.remove('active');
+            },
+
+            refreshAll() {
+                this.updateDate();
+                this.renderTodayReminders();
+                this.renderMedications();
+                this.renderHistory();
+                this.renderStatistics();
+            }
+        };
+
+        // ==========================================
+        // Application Logic
+        // ==========================================
+        const App = {
+            init() {
+                AppState.init();
+                UI.init();
+                this.bindEvents();
+                UI.refreshAll();
+            },
+
+            bindEvents() {
+                // Navigation
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        this.switchView(item.dataset.view);
+                    });
+                });
+
+                // FAB
+                document.getElementById('addMedicationBtn').addEventListener('click', () => {
+                    UI.openModal();
+                });
+
+                // Modal controls
+                document.getElementById('closeModal').addEventListener('click', () => {
+                    UI.closeModal();
+                });
+
+                document.getElementById('cancelBtn').addEventListener('click', () => {
+                    UI.closeModal();
+                });
+
+                // Form tabs
+                document.querySelectorAll('.form-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const tabName = tab.dataset.tab;
+                        document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                        tab.classList.add('active');
+                        document.getElementById(tabName + 'Tab').classList.add('active');
+                    });
+                });
+
+                // Parse description button
+                document.getElementById('parseDescriptionBtn').addEventListener('click', () => {
+                    const description = document.getElementById('medicationDescription').value;
+                    const result = MedicationParser.parseMedicationDescription(description);
+                    MedicationParser.displayParseResult(result);
+                });
+
+                // Apply parse result button
+                document.getElementById('applyParseBtn').addEventListener('click', () => {
+                    const description = document.getElementById('medicationDescription').value;
+                    const result = MedicationParser.parseMedicationDescription(description);
+                    if (!result.error) {
+                        MedicationParser.applyParsedResult(result);
+                    }
+                });
+
+                // Time picker
+                UI.elements.addTimeBtn.addEventListener('click', () => {
+                    UI.addTime();
+                });
+
+                UI.elements.timePicker.addEventListener('click', (e) => {
+                    const chip = e.target.closest('.time-chip');
+                    if (chip && !e.target.classList.contains('remove-time')) {
+                        chip.classList.toggle('selected');
+                        const time = chip.dataset.time;
+                        if (chip.classList.contains('selected')) {
+                            if (!AppState.selectedTimes.includes(time)) {
+                                AppState.selectedTimes.push(time);
+                                AppState.selectedTimes.sort();
+                            }
+                        } else {
+                            AppState.selectedTimes = AppState.selectedTimes.filter(t => t !== time);
+                        }
+                    }
+                });
+
+                // Days picker
+                UI.elements.daysPicker.addEventListener('click', (e) => {
+                    const item = e.target.closest('.checkbox-item');
+                    if (item) {
+                        item.classList.toggle('selected');
+                        const day = parseInt(item.dataset.day);
+                        if (item.classList.contains('selected')) {
+                            if (!AppState.selectedDays.includes(day)) {
+                                AppState.selectedDays.push(day);
+                            }
+                        } else {
+                            AppState.selectedDays = AppState.selectedDays.filter(d => d !== day);
+                        }
+                    }
+                });
+
+                // Form submission
+                UI.elements.medicationForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveMedication();
+                });
+
+                // Settings
+                document.getElementById('exportData').addEventListener('click', () => {
+                    this.exportData();
+                });
+
+                document.getElementById('importData').addEventListener('click', () => {
+                    document.getElementById('fileInput').click();
+                });
+
+                document.getElementById('fileInput').addEventListener('change', (e) => {
+                    this.importData(e.target.files[0]);
+                });
+
+                document.getElementById('notificationToggle').addEventListener('click', async () => {
+                    if (!AppState.settings.notificationsEnabled) {
+                        const permission = await NotificationManager.requestPermission();
+                        if (permission === 'granted') {
+                            AppState.settings.notificationsEnabled = true;
+                            UI.showToast('提醒已开启 🔔');
+                        } else if (permission === 'denied') {
+                            UI.showToast('通知权限被拒绝，请在浏览器设置中开启');
+                        } else {
+                            UI.showToast('当前浏览器不支持通知功能');
+                        }
+                    } else {
+                        AppState.settings.notificationsEnabled = false;
+                        UI.showToast('提醒已关闭');
+                    }
+                    Storage.saveSettings(AppState.settings);
+                    UI.renderStatistics();
+                });
+
+                document.getElementById('clearData').addEventListener('click', () => {
+                    UI.showConfirm('清除所有数据', '确定要清除所有药品和记录数据吗？此操作不可恢复。', () => {
+                        Storage.remove(Storage.KEYS.MEDICATIONS);
+                        Storage.remove(Storage.KEYS.LOGS);
+                        AppState.medications = [];
+                        AppState.logs = [];
+                        UI.refreshAll();
+                        UI.showToast('数据已清除');
+                    });
+                });
+
+                // Confirm modal
+                document.getElementById('closeConfirmModal').addEventListener('click', () => {
+                    UI.closeConfirmModal();
+                });
+
+                document.getElementById('confirmCancel').addEventListener('click', () => {
+                    UI.closeConfirmModal();
+                });
+
+                // Close modal on overlay click
+                UI.elements.medicationModal.addEventListener('click', (e) => {
+                    if (e.target === UI.elements.medicationModal) {
+                        UI.closeModal();
+                    }
+                });
+
+                UI.elements.confirmModal.addEventListener('click', (e) => {
+                    if (e.target === UI.elements.confirmModal) {
+                        UI.closeConfirmModal();
+                    }
+                });
+
+                // Generate reminders for today on init
+                this.generateTodayReminders();
+
+                // Start notification check
+                if (NotificationManager.isSupported() && Notification.permission === 'granted') {
+                    NotificationManager.startReminderCheck();
+                }
+            },
+
+            switchView(viewName) {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.toggle('active', item.dataset.view === viewName);
+                });
+
+                document.querySelectorAll('.view').forEach(view => {
+                    view.classList.toggle('active', view.id === viewName + 'View');
+                });
+
+                AppState.currentView = viewName;
+
+                if (viewName === 'records') {
+                    UI.renderHistory();
+                } else if (viewName === 'settings') {
+                    UI.renderStatistics();
+                }
+            },
+
+            saveMedication() {
+                const id = UI.elements.medicationForm.querySelector('#medicationId').value;
+                const name = document.getElementById('medicationName').value.trim();
+                const dosage = document.getElementById('medicationDosage').value.trim();
+                const frequency = document.getElementById('medicationFrequency').value;
+                const method = document.getElementById('medicationMethod').value;
+                const notes = document.getElementById('medicationNotes').value.trim();
+
+                if (!name) {
+                    UI.showToast('请输入药品名称');
+                    return;
+                }
+
+                if (AppState.selectedTimes.length === 0) {
+                    UI.showToast('请至少选择一个服用时间');
+                    return;
+                }
+
+                if (AppState.selectedDays.length === 0) {
+                    UI.showToast('请至少选择一个服用日期');
+                    return;
+                }
+
+                const medicationData = {
+                    name,
+                    dosage,
+                    frequency,
+                    method,
+                    times: AppState.selectedTimes,
+                    days: AppState.selectedDays,
+                    notes
+                };
+
+                if (id) {
+                    AppState.updateMedication(id, medicationData);
+                    UI.showToast('药品已更新');
+                } else {
+                    const medication = createMedication(medicationData);
+                    AppState.addMedication(medication);
+                    UI.showToast('药品已添加');
+                }
+
+                UI.closeModal();
+                UI.refreshAll();
+            },
+
+            editMedication(id) {
+                UI.openModal('编辑药品', id);
+            },
+
+            deleteMedication(id) {
+                const medication = AppState.medications.find(m => m.id === id);
+                if (!medication) return;
+
+                UI.showConfirm('删除药品', `确定要删除 "${medication.name}" 吗？`, () => {
+                    AppState.deleteMedication(id);
+                    UI.refreshAll();
+                    UI.showToast('药品已删除');
+                });
+            },
+
+            markAsTaken(reminderId, medicationId, scheduledTime, medicationName, dosage) {
+                const todayStr = new Date().toISOString().split('T')[0];
+                const actualTime = new Date().toTimeString().slice(0, 5);
+                
+                let log = AppState.logs.find(
+                    l => l.id === reminderId || 
+                    (l.medicationId === medicationId && 
+                     l.scheduledTime === scheduledTime && 
+                     l.createdAt.startsWith(todayStr))
+                );
+
+                if (log) {
+                    AppState.updateLog(log.id, {
+                        status: 'completed',
+                        actualTime
+                    });
+                } else {
+                    log = createLog({
+                        medicationId,
+                        medicationName,
+                        scheduledTime,
+                        actualTime,
+                        status: 'completed',
+                        dosage
+                    });
+                    AppState.addLog(log);
+                }
+
+                UI.refreshAll();
+                UI.showToast('已标记为已服用 ✅');
+            },
+
+            markAsSkipped(reminderId, medicationId, scheduledTime, medicationName, dosage) {
+                const todayStr = new Date().toISOString().split('T')[0];
+                
+                let log = AppState.logs.find(
+                    l => l.id === reminderId || 
+                    (l.medicationId === medicationId && 
+                     l.scheduledTime === scheduledTime && 
+                     l.createdAt.startsWith(todayStr))
+                );
+
+                if (log) {
+                    AppState.updateLog(log.id, {
+                        status: 'skipped'
+                    });
+                } else {
+                    log = createLog({
+                        medicationId,
+                        medicationName,
+                        scheduledTime,
+                        status: 'skipped',
+                        dosage
+                    });
+                    AppState.addLog(log);
+                }
+
+                UI.refreshAll();
+                UI.showToast('已跳过 ⏭️');
+            },
+
+            generateTodayReminders() {
+                const today = new Date();
+                const dayOfWeek = today.getDay();
+                const todayStr = today.toISOString().split('T')[0];
+
+                AppState.medications.forEach(med => {
+                    if (med.days.includes(dayOfWeek)) {
+                        med.times.forEach(time => {
+                            const existingLog = AppState.logs.find(
+                                l => l.medicationId === med.id && 
+                                l.scheduledTime === time &&
+                                l.createdAt.startsWith(todayStr)
+                            );
+                            
+                            if (!existingLog) {
+                                const log = createLog({
+                                    medicationId: med.id,
+                                    medicationName: med.name,
+                                    scheduledTime: time,
+                                    status: 'pending'
+                                });
+                                AppState.addLog(log);
+                            }
+                        });
+                    }
+                });
+            },
+
+            exportData() {
+                const data = {
+                    medications: AppState.medications,
+                    logs: AppState.logs,
+                    settings: AppState.settings,
+                    exportDate: new Date().toISOString(),
+                    version: '1.0.0'
+                };
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `medication-reminder-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                UI.showToast('数据导出成功 📤');
+            },
+
+            importData(file) {
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        
+                        if (data.medications && data.logs) {
+                            AppState.medications = data.medications;
+                            AppState.logs = data.logs;
+                            
+                            if (data.settings) {
+                                AppState.settings = data.settings;
+                            }
+
+                            Storage.saveMedications(AppState.medications);
+                            Storage.saveLogs(AppState.logs);
+                            Storage.saveSettings(AppState.settings);
+
+                            UI.refreshAll();
+                            UI.showToast('数据导入成功 📥');
+                        } else {
+                            UI.showToast('文件格式不正确');
+                        }
+                    } catch (error) {
+                        UI.showToast('导入失败，请检查文件格式');
+                    }
+                };
+                reader.readAsText(file);
+                document.getElementById('fileInput').value = '';
+            }
+        };
+
+        // ==========================================
+        // Initialize Application
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            App.init();
+        });
+
+        // Service Worker Registration (for future PWA support)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    </script>
+</body>
+</html>
