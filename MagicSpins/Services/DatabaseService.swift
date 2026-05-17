@@ -147,4 +147,16 @@ class DatabaseService {
         let completedCount = records.filter { $0.status == .taken || $0.status == .skipped }.count
         return Double(completedCount) / Double(records.count) * 100
     }
+    
+    func deleteMedicationsByMember(memberId: UUID) {
+        var medications = fetchAllMedications()
+        medications.removeAll { $0.memberId == memberId }
+        saveMedications(medications)
+    }
+    
+    func deleteDoseRecordsByMember(memberId: UUID) {
+        var records = fetchAllDoseRecords()
+        records.removeAll { $0.memberId == memberId }
+        saveDoseRecords(records)
+    }
 }

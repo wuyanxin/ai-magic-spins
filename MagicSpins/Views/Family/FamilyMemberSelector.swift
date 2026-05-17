@@ -170,8 +170,3 @@ struct MemberPickerSheet: View {
         }
     }
 }
-
-#Preview {
-    FamilyMemberSelector()
-        .environmentObject(FamilyMemberViewModel())
-}

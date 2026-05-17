@@ -446,8 +446,3 @@ struct EditFamilyMemberView: View {
         dismiss()
     }
 }
-
-#Preview {
-    FamilyManagementView()
-        .environmentObject(FamilyMemberViewModel())
-}

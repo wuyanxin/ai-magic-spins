@@ -265,8 +265,3 @@ struct FamilyStatsView: View {
         return Int.random(in: 0...3)
     }
 }
-
-#Preview {
-    FamilyStatsView()
-        .environmentObject(FamilyMemberViewModel())
-}

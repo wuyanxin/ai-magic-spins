@@ -1,20 +1,9 @@
 import Foundation
-import SQLite
 
 class FamilyMemberService {
     static let shared = FamilyMemberService()
-    
-    private var db: Connection?
-    
-    private let familyMembers = Table("family_members")
-    
-    private let memberId = Expression<String>("id")
-    private let memberName = Expression<String>("name")
-    private let memberRelationship = Expression<String>("relationship")
-    private let memberAvatarColor = Expression<String>("avatarColor")
-    private let memberIsDefault = Expression<Bool>("isDefault")
-    private let memberCreatedAt = Expression<String>("createdAt")
-    private let memberUpdatedAt = Expression<String>("updatedAt")
+    private let userDefaults = UserDefaults.standard
+    private let familyMembersKey = "familyMembers"
     
     private let dateFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
@@ -22,263 +11,88 @@ class FamilyMemberService {
         return formatter
     }()
     
-    private init() {
-        setupDatabase()
-    }
-    
-    private func setupDatabase() {
-        do {
-            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
-            db = try Connection("\(path)/magicSpins.sqlite3")
-            try createTables()
-        } catch {
-            print("FamilyMemberService - Database setup failed: \(error)")
-        }
-    }
-    
-    private func createTables() throws {
-        try db?.run(familyMembers.create(ifNotExists: true) { t in
-            t.column(memberId, primaryKey: true)
-            t.column(memberName)
-            t.column(memberRelationship)
-            t.column(memberAvatarColor)
-            t.column(memberIsDefault)
-            t.column(memberCreatedAt)
-            t.column(memberUpdatedAt)
-        })
-    }
+    private init() {}
     
     func addFamilyMember(_ member: FamilyMember) throws {
-        guard let db = db else { throw DatabaseError.connectionFailed }
+        var members = try fetchAllFamilyMembers()
         
         var newMember = member
-        if isFirstMember() {
+        if members.isEmpty {
             newMember.isDefault = true
         }
         
-        try db.run(familyMembers.insert(
-            memberId <- newMember.id.uuidString,
-            memberName <- newMember.name,
-            memberRelationship <- newMember.relationship.rawValue,
-            memberAvatarColor <- newMember.avatarColor,
-            memberIsDefault <- newMember.isDefault,
-            memberCreatedAt <- dateFormatter.string(from: newMember.createdAt),
-            memberUpdatedAt <- dateFormatter.string(from: newMember.updatedAt)
-        ))
+        members.append(newMember)
+        saveFamilyMembers(members)
     }
     
     func updateFamilyMember(_ member: FamilyMember) throws {
-        guard let db = db else { throw DatabaseError.connectionFailed }
+        var members = try fetchAllFamilyMembers()
         
-        let query = familyMembers.filter(memberId == member.id.uuidString)
-        try db.run(query.update(
-            memberName <- member.name,
-            memberRelationship <- member.relationship.rawValue,
-            memberAvatarColor <- member.avatarColor,
-            memberIsDefault <- member.isDefault,
-            memberUpdatedAt <- dateFormatter.string(from: Date())
-        ))
+        if let index = members.firstIndex(where: { $0.id == member.id }) {
+            var updatedMember = member
+            updatedMember.updatedAt = Date()
+            members[index] = updatedMember
+            saveFamilyMembers(members)
+        }
     }
     
     func deleteFamilyMember(id: UUID) throws {
-        guard let db = db else { throw DatabaseError.connectionFailed }
+        var members = try fetchAllFamilyMembers()
+        members.removeAll { $0.id == id }
+        saveFamilyMembers(members)
         
-        let query = familyMembers.filter(memberId == id.uuidString)
-        try db.run(query.delete())
+        DatabaseService.shared.deleteMedicationsByMember(memberId: id)
+        DatabaseService.shared.deleteDoseRecordsByMember(memberId: id)
         
-        try MedicationDatabaseService.shared.deleteMedications(for: id)
-        try DoseRecordService.shared.deleteDoseRecords(for: id)
+        if members.isEmpty {
+            return
+        }
         
-        if try isDefaultMember(id: id) {
-            try setFirstMemberAsDefault()
+        if !members.contains(where: { $0.isDefault }) {
+            members[0].isDefault = true
+            saveFamilyMembers(members)
         }
     }
     
     func fetchAllFamilyMembers() throws -> [FamilyMember] {
-        guard let db = db else { throw DatabaseError.connectionFailed }
-        
-        var result: [FamilyMember] = []
-        
-        for row in try db.prepare(familyMembers.order(memberCreatedAt.asc)) {
-            let member = FamilyMember(
-                id: UUID(uuidString: row[memberId])!,
-                name: row[memberName],
-                relationship: MemberRelationship(rawValue: row[memberRelationship]) ?? .other,
-                avatarColor: row[memberAvatarColor],
-                isDefault: row[memberIsDefault],
-                createdAt: dateFormatter.date(from: row[memberCreatedAt]) ?? Date(),
-                updatedAt: dateFormatter.date(from: row[memberUpdatedAt]) ?? Date()
-            )
-            result.append(member)
+        guard let data = userDefaults.data(forKey: familyMembersKey) else {
+            return []
         }
-        
-        return result
+        do {
+            let members = try JSONDecoder().decode([FamilyMember].self, from: data)
+            return members.sorted { $0.createdAt < $1.createdAt }
+        } catch {
+            print("Failed to decode family members: \(error)")
+            return []
+        }
     }
     
     func fetchFamilyMember(id: UUID) throws -> FamilyMember? {
-        guard let db = db else { throw DatabaseError.connectionFailed }
-        
-        let query = familyMembers.filter(memberId == id.uuidString)
-        
-        for row in try db.prepare(query) {
-            return FamilyMember(
-                id: UUID(uuidString: row[memberId])!,
-                name: row[memberName],
-                relationship: MemberRelationship(rawValue: row[memberRelationship]) ?? .other,
-                avatarColor: row[memberAvatarColor],
-                isDefault: row[memberIsDefault],
-                createdAt: dateFormatter.date(from: row[memberCreatedAt]) ?? Date(),
-                updatedAt: dateFormatter.date(from: row[memberUpdatedAt]) ?? Date()
-            )
-        }
-        
-        return nil
+        let members = try fetchAllFamilyMembers()
+        return members.first { $0.id == id }
     }
     
     func fetchDefaultFamilyMember() throws -> FamilyMember? {
-        guard let db = db else { throw DatabaseError.connectionFailed }
-        
-        let query = familyMembers.filter(memberIsDefault == true)
-        
-        for row in try db.prepare(query) {
-            return FamilyMember(
-                id: UUID(uuidString: row[memberId])!,
-                name: row[memberName],
-                relationship: MemberRelationship(rawValue: row[memberRelationship]) ?? .other,
-                avatarColor: row[memberAvatarColor],
-                isDefault: row[memberIsDefault],
-                createdAt: dateFormatter.date(from: row[memberCreatedAt]) ?? Date(),
-                updatedAt: dateFormatter.date(from: row[memberUpdatedAt]) ?? Date()
-            )
-        }
-        
-        return nil
+        let members = try fetchAllFamilyMembers()
+        return members.first { $0.isDefault }
     }
     
     func setDefaultMember(id: UUID) throws {
-        guard let db = db else { throw DatabaseError.connectionFailed }
+        var members = try fetchAllFamilyMembers()
         
-        try db.run(familyMembers.update(memberIsDefault <- false))
+        for i in members.indices {
+            members[i].isDefault = (members[i].id == id)
+        }
         
-        let query = familyMembers.filter(memberId == id.uuidString)
-        try db.run(query.update(memberIsDefault <- true))
+        saveFamilyMembers(members)
     }
     
-    private func isFirstMember() -> Bool {
-        guard let db = db else { return true }
-        
+    private func saveFamilyMembers(_ members: [FamilyMember]) {
         do {
-            let count = try db.scalar(familyMembers.count)
-            return count == 0
+            let data = try JSONEncoder().encode(members)
+            userDefaults.set(data, forKey: familyMembersKey)
         } catch {
-            return true
+            print("Failed to save family members: \(error)")
         }
-    }
-    
-    private func isDefaultMember(id: UUID) throws -> Bool {
-        guard let db = db else { throw DatabaseError.connectionFailed }
-        
-        let query = familyMembers.filter(memberId == id.uuidString && memberIsDefault == true)
-        let count = try db.scalar(query.count)
-        return count > 0
-    }
-    
-    private func setFirstMemberAsDefault() throws {
-        guard let db = db else { throw DatabaseError.connectionFailed }
-        
-        let firstMemberQuery = familyMembers.limit(1)
-        
-        for row in try db.prepare(firstMemberQuery) {
-            let query = familyMembers.filter(memberId == row[memberId])
-            try db.run(query.update(memberIsDefault <- true))
-            break
-        }
-    }
-}
-
-class MedicationDatabaseService {
-    static let shared = MedicationDatabaseService()
-    
-    private var db: Connection?
-    
-    private let medications = Table("medications")
-    private let medId = Expression<String>("id")
-    private let medMemberId = Expression<String>("memberId")
-    
-    private init() {
-        setupDatabase()
-    }
-    
-    private func setupDatabase() {
-        do {
-            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
-            db = try Connection("\(path)/magicSpins.sqlite3")
-        } catch {
-            print("MedicationDatabaseService - Database setup failed: \(error)")
-        }
-    }
-    
-    func addMemberIdColumn() throws {
-        guard let db = db else { throw DatabaseError.connectionFailed }
-        
-        do {
-            try db.run(medications.addColumn(medMemberId, defaultValue: "default"))
-        } catch {
-            print("Column might already exist: \(error)")
-        }
-    }
-    
-    func updateMedicationMemberId(medicationId: UUID, memberId: UUID) throws {
-        guard let db = db else { throw DatabaseError.connectionFailed }
-        
-        let query = medications.filter(medId == medicationId.uuidString)
-        try db.run(query.update(medMemberId <- memberId.uuidString))
-    }
-    
-    func deleteMedications(for memberId: UUID) throws {
-        guard let db = db else { throw DatabaseError.connectionFailed }
-        
-        let query = medications.filter(medMemberId == memberId.uuidString)
-        try db.run(query.delete())
-    }
-}
-
-class DoseRecordService {
-    static let shared = DoseRecordService()
-    
-    private var db: Connection?
-    
-    private let doseRecords = Table("dose_records")
-    private let doseId = Expression<String>("id")
-    private let doseMemberId = Expression<String>("memberId")
-    
-    private init() {
-        setupDatabase()
-    }
-    
-    private func setupDatabase() {
-        do {
-            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
-            db = try Connection("\(path)/magicSpins.sqlite3")
-        } catch {
-            print("DoseRecordService - Database setup failed: \(error)")
-        }
-    }
-    
-    func addMemberIdColumn() throws {
-        guard let db = db else { throw DatabaseError.connectionFailed }
-        
-        do {
-            try db.run(doseRecords.addColumn(doseMemberId, defaultValue: "default"))
-        } catch {
-            print("Column might already exist: \(error)")
-        }
-    }
-    
-    func deleteDoseRecords(for memberId: UUID) throws {
-        guard let db = db else { throw DatabaseError.connectionFailed }
-        
-        let query = doseRecords.filter(doseMemberId == memberId.uuidString)
-        try db.run(query.delete())
     }
 }

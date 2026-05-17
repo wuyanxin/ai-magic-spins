@@ -12,14 +12,17 @@
 		21D41467334D9258DEA2D8D0 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F122854EF4864072F60AB40C /* Constants.swift */; };
 		2C868F79BE9EB019C6A5CD0D /* MagicSpinsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B524BDF1888979D5232859CB /* MagicSpinsApp.swift */; };
 		2E502F47F4F868EBAB42987F /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FACBA544309EFA4F06E92AD /* DatabaseService.swift */; };
+		3D92C8A3272E0BFE1A05B719 /* FamilyMemberService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0525C67001F2E0D084AA0CF /* FamilyMemberService.swift */; };
 		523EF7996435B5D23D536490 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17F7C57F9C402ACD1121221 /* ImagePicker.swift */; };
 		56C93641E99B34F42B8304EC /* ReminderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2B23B716A1F11FE069B42B /* ReminderViewModel.swift */; };
+		57A696CBC8EEBA3D61FE4697 /* FamilyMemberViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64805E31116FCE7F20D33634 /* FamilyMemberViewModel.swift */; };
 		6247928E63769BB4AC809B72 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7442BD4747F88670C84C93B7 /* NotificationService.swift */; };
 		6D3FD669F596094F5FAB0FB5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8950798905EF732480C169 /* SettingsView.swift */; };
 		737B4AC59DC93F408A664795 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E74C2AB00A43808DF9BF9D /* HomeView.swift */; };
 		76578937D0DC7FD7BC6FE1B5 /* MedicationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346E3A07F44EDB2DB0ED1756 /* MedicationViewModel.swift */; };
 		7BA026E36218E6701CC2A398 /* MedicationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A778DDBA6B79ADCE8302B38A /* MedicationListView.swift */; };
 		86E36AC7B7C2971F4A0A1C77 /* AddMedicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0459FDFB7E9D3B70E726E15 /* AddMedicationView.swift */; };
+		87D9F5959810792F08958B8B /* FamilyMemberSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB188C2782C602FCFCC2F82 /* FamilyMemberSelector.swift */; };
 		885BB9AB3BCE142D51498844 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89D0C78E19E201AC28B195AC /* HistoryView.swift */; };
 		8D9D7E864F816C79F5B9D9F5 /* Medication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D788D013E42086BA2C67521E /* Medication.swift */; };
 		97A8A6FD5512AA36D3D450C0 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F472306FA11710EA85E01AD /* Extensions.swift */; };
@@ -28,6 +31,9 @@
 		C7A25E002C9225DA77E543E0 /* DoseRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB5261FA7536E9BE3AAE2627 /* DoseRecord.swift */; };
 		CCA87C463845EB5F0B106365 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6620E8975DDB0BB812B90AF6 /* HistoryViewModel.swift */; };
 		CD4D525335A1F4D40377D97B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 708DD26ADE424128727DB838 /* README.md */; };
+		D1DB8BBCEC2E28924F7057A7 /* FamilyManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5778C5C297EA38E19223442 /* FamilyManagementView.swift */; };
+		DA1C3C52C08F427B1E1DDC77 /* FamilyMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1C0112A692D7DDF90CB8EC /* FamilyMember.swift */; };
+		DBD7F5437952C6A9B2584B40 /* FamilyStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31761C8EC3908C288377ADEB /* FamilyStatsView.swift */; };
 		DDAF9A7CDAF0F4F5F6533F1D /* MedicationScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA96691BB7D183727DB7C6BA /* MedicationScannerView.swift */; };
 		F2C1944075733B3AD8432CCF /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD45BB13C6FC2A4B53F4055 /* Enums.swift */; };
 		F31E41A745AB39233FC03F1E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 987BE3F69800342BF5F87533 /* ContentView.swift */; };
@@ -40,23 +46,29 @@
 		13DB5CF2E94EB8D32F0D5804 /* MedicationDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationDatabase.swift; sourceTree = "<group>"; };
 		13F212DE8FE86131A73A54EA /* MedicationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationCard.swift; sourceTree = "<group>"; };
 		1F472306FA11710EA85E01AD /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		31761C8EC3908C288377ADEB /* FamilyStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyStatsView.swift; sourceTree = "<group>"; };
 		346E3A07F44EDB2DB0ED1756 /* MedicationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationViewModel.swift; sourceTree = "<group>"; };
 		5FACBA544309EFA4F06E92AD /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
+		64805E31116FCE7F20D33634 /* FamilyMemberViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyMemberViewModel.swift; sourceTree = "<group>"; };
 		6620E8975DDB0BB812B90AF6 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
 		708DD26ADE424128727DB838 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		7442BD4747F88670C84C93B7 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		7FB188C2782C602FCFCC2F82 /* FamilyMemberSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyMemberSelector.swift; sourceTree = "<group>"; };
 		89D0C78E19E201AC28B195AC /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		8DEE2FC2982152F232438B85 /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
 		987BE3F69800342BF5F87533 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9F2B23B716A1F11FE069B42B /* ReminderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderViewModel.swift; sourceTree = "<group>"; };
 		A778DDBA6B79ADCE8302B38A /* MedicationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationListView.swift; sourceTree = "<group>"; };
 		B524BDF1888979D5232859CB /* MagicSpinsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicSpinsApp.swift; sourceTree = "<group>"; };
+		C0525C67001F2E0D084AA0CF /* FamilyMemberService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyMemberService.swift; sourceTree = "<group>"; };
 		CB5261FA7536E9BE3AAE2627 /* DoseRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoseRecord.swift; sourceTree = "<group>"; };
 		D5B4D9DCBB349E0F2F48169E /* MagicSpins.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MagicSpins.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D788D013E42086BA2C67521E /* Medication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Medication.swift; sourceTree = "<group>"; };
 		DA96691BB7D183727DB7C6BA /* MedicationScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationScannerView.swift; sourceTree = "<group>"; };
 		DB8950798905EF732480C169 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		DD1C0112A692D7DDF90CB8EC /* FamilyMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyMember.swift; sourceTree = "<group>"; };
 		E0459FDFB7E9D3B70E726E15 /* AddMedicationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMedicationView.swift; sourceTree = "<group>"; };
+		E5778C5C297EA38E19223442 /* FamilyManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyManagementView.swift; sourceTree = "<group>"; };
 		EDD45BB13C6FC2A4B53F4055 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		F122854EF4864072F60AB40C /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		F17F7C57F9C402ACD1121221 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
@@ -67,6 +79,7 @@
 		22A2CFD8FEEDF791FD9805F1 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				64805E31116FCE7F20D33634 /* FamilyMemberViewModel.swift */,
 				6620E8975DDB0BB812B90AF6 /* HistoryViewModel.swift */,
 				346E3A07F44EDB2DB0ED1756 /* MedicationViewModel.swift */,
 				9F2B23B716A1F11FE069B42B /* ReminderViewModel.swift */,
@@ -137,6 +150,7 @@
 			isa = PBXGroup;
 			children = (
 				5FACBA544309EFA4F06E92AD /* DatabaseService.swift */,
+				C0525C67001F2E0D084AA0CF /* FamilyMemberService.swift */,
 				13DB5CF2E94EB8D32F0D5804 /* MedicationDatabase.swift */,
 				7442BD4747F88670C84C93B7 /* NotificationService.swift */,
 				8DEE2FC2982152F232438B85 /* OCRService.swift */,
@@ -157,6 +171,7 @@
 			children = (
 				CB5261FA7536E9BE3AAE2627 /* DoseRecord.swift */,
 				EDD45BB13C6FC2A4B53F4055 /* Enums.swift */,
+				DD1C0112A692D7DDF90CB8EC /* FamilyMember.swift */,
 				D788D013E42086BA2C67521E /* Medication.swift */,
 				0B8A25DD8D8487394E405395 /* ScanResult.swift */,
 			);
@@ -172,6 +187,16 @@
 			path = Utilities;
 			sourceTree = "<group>";
 		};
+		D2B82179150BE737EE7E6B6A /* Family */ = {
+			isa = PBXGroup;
+			children = (
+				E5778C5C297EA38E19223442 /* FamilyManagementView.swift */,
+				7FB188C2782C602FCFCC2F82 /* FamilyMemberSelector.swift */,
+				31761C8EC3908C288377ADEB /* FamilyStatsView.swift */,
+			);
+			path = Family;
+			sourceTree = "<group>";
+		};
 		F1FCADE6A2FBF15FA29517BD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -183,6 +208,7 @@
 			isa = PBXGroup;
 			children = (
 				987BE3F69800342BF5F87533 /* ContentView.swift */,
+				D2B82179150BE737EE7E6B6A /* Family */,
 				39ADCC0768B3DDBF5D75B598 /* History */,
 				F42D2276A8B83F8262175D1E /* Home */,
 				46DB3068F86E4A53953B1D4A /* Medication */,
@@ -278,6 +304,12 @@
 				C7A25E002C9225DA77E543E0 /* DoseRecord.swift in Sources */,
 				F2C1944075733B3AD8432CCF /* Enums.swift in Sources */,
 				97A8A6FD5512AA36D3D450C0 /* Extensions.swift in Sources */,
+				D1DB8BBCEC2E28924F7057A7 /* FamilyManagementView.swift in Sources */,
+				DA1C3C52C08F427B1E1DDC77 /* FamilyMember.swift in Sources */,
+				87D9F5959810792F08958B8B /* FamilyMemberSelector.swift in Sources */,
+				3D92C8A3272E0BFE1A05B719 /* FamilyMemberService.swift in Sources */,
+				57A696CBC8EEBA3D61FE4697 /* FamilyMemberViewModel.swift in Sources */,
+				DBD7F5437952C6A9B2584B40 /* FamilyStatsView.swift in Sources */,
 				885BB9AB3BCE142D51498844 /* HistoryView.swift in Sources */,
 				CCA87C463845EB5F0B106365 /* HistoryViewModel.swift in Sources */,
 				737B4AC59DC93F408A664795 /* HomeView.swift in Sources */,
